@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::div})}">
+<head>
+    <title>머물곳</title>
+</head>
+<body>
+<div class="container">
+    <h2 class="mb-4">새 게시글 작성</h2>
+
+    <form th:action="@{/posts/write}" method="post" th:object="${postCreateRequest}">
+        <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" th:field="*{title}" class="form-control" id="title" placeholder="제목을 입력하세요" required>
+            <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger mt-1"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea th:field="*{content}" class="form-control" id="content" rows="6" placeholder="본문 내용을 작성하세요" required></textarea>
+            <div th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="text-danger mt-1"></div>
+        </div>
+
+        <label>태그</label><br/>
+        <th:block th:each="tag : ${allTags}">
+            <label>
+                <input type="checkbox" name="tagIds"
+                       th:value="${tag.tagId}"
+                       th:checked="${post != null and post.tags.contains(tag.tagId)}" />
+                <span th:text="${tag.name}"></span>
+            </label><br/>
+        </th:block>
+
+        <input type="hidden" name="memberId" value="1"/>
+
+        <div class="d-flex justify-content-end">
+            <a th:href="@{/posts}" class="btn btn-secondary me-2">취소</a>
+            <button type="submit" class="btn btn-primary">작성 완료</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

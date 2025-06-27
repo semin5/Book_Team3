@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::div})}">
+<head>
+    <title>머물곳</title>
+</head>
+<body>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>게시글 목록</h2>
+        <a href="/posts/write" class="btn btn-primary">글쓰기</a>
+    </div>
+
+    <form method="get" th:action="@{/posts}" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="keyword" th:value="${condition.keyword}"
+                   class="form-control" placeholder="본문 + 내용">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="tag">
+                <option th:value="null" th:selected="${condition.tag == null}">전체</option>
+                <option th:value="'#조용한'" th:selected="${condition.tag == '#조용한'}">#조용한</option>
+                <option th:value="'#고요한'" th:selected="${condition.tag == '#고요한'}">#고요한</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select class="form-select" name="isSolved">
+                <option th:value="null" th:selected="${condition.isSolved == null}">전체</option>
+                <option th:value="false" th:selected="${condition.isSolved == false}">미해결</option>
+                <option th:value="true" th:selected="${condition.isSolved == true}">해결됨</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-secondary w-100" type="submit">검색</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered bg-white">
+        <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>상태</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="post : ${posts.content}">
+            <td th:text="${post.postId}"></td>
+            <td><a th:href="@{'/posts/' + ${post.postId}}" th:text="${post.title}"></a></td>
+            <td th:text="${post.nickname}"></td>
+            <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <span th:text="${post.isSolved} ? '해결됨' : '미해결'" th:class="${post.isSolved} ? 'text-success' : 'text-danger'"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav th:if="${posts.totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${posts.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/posts(page=0, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved})}">처음</a>
+            </li>
+            <li class="page-item" th:classappend="${posts.hasPrevious()} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{/posts(page=${posts.number - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved})}">이전</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" th:text="${posts.number + 1} + ' / ' + ${posts.totalPages}"></a>
+            </li>
+            <li class="page-item" th:classappend="${posts.hasNext()} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{/posts(page=${posts.number + 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved})}">다음</a>
+            </li>
+            <li class="page-item" th:classappend="${posts.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/posts(page=${posts.totalPages - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved})}">끝</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>
+
