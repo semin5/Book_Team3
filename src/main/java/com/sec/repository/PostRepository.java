@@ -14,9 +14,9 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer>, JpaSpecificationExecutor<Post> {
-    List<Post> findByMember_MemberId(int memberId);
     List<Post> findByTagsNameContaining(String tagName);
     List<Post> findByContentContaining(String keyword);
     @EntityGraph(attributePaths = {"tags", "member"})
     Page<Post> findAll(Specification<Post> spec, Pageable pageable);
+
 }

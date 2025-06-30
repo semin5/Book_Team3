@@ -31,6 +31,9 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/team3
 logging:
   level:
     org:
@@ -39,3 +42,5 @@ logging:
         type:
           descriptor:
             sql: TRACE
+server:
+  port: 8081

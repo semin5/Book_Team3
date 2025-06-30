@@ -26,6 +26,24 @@
 
     <hr class="my-5">
 
+    <div class="mb-3">
+        <form th:action="@{/posts/{id}/react(id=${post.postId})}" method="post" style="display:inline;">
+            <input type="hidden" name="type" value="LIKE">
+            <button type="submit" class="btn btn-outline-primary"
+                    th:classappend="${userReaction} == 'LIKE' ? 'active' : ''">
+                👍 좋아요 : <span th:text="${likeCount}">0</span>
+            </button>
+        </form>
+
+        <form th:action="@{/posts/{id}/react(id=${post.postId})}" method="post" style="display:inline;">
+            <input type="hidden" name="type" value="DISLIKE">
+            <button type="submit" class="btn btn-outline-danger"
+                    th:classappend="${userReaction} == 'DISLIKE' ? 'active' : ''">
+                👎 싫어요 : <span th:text="${dislikeCount}">0</span>
+            </button>
+        </form>
+    </div>
+
     <h4>📚 추천 댓글</h4>
 
     <div th:if="${comments != null and #lists.isEmpty(comments)}" class="text-muted">

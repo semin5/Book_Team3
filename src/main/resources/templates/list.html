@@ -31,6 +31,14 @@
             </select>
         </div>
         <div class="col-md-2">
+            <select class="form-select" name="sort">
+                <option value="createdAt" th:selected="${sort == 'createdAt'}">최신순</option>
+                <option value="like" th:selected="${sort == 'like'}">좋아요순</option>
+                <option value="dislike" th:selected="${sort == 'dislike'}">싫어요순</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
             <button class="btn btn-secondary w-100" type="submit">검색</button>
         </div>
     </form>
@@ -43,6 +51,7 @@
             <th>작성자</th>
             <th>작성일</th>
             <th>상태</th>
+            <th>추천</th>
         </tr>
         </thead>
         <tbody>
@@ -54,6 +63,7 @@
             <td>
                 <span th:text="${post.isSolved} ? '해결됨' : '미해결'" th:class="${post.isSolved} ? 'text-success' : 'text-danger'"></span>
             </td>
+            <td th:text="${post.totalReactionCount}">0</td>
         </tr>
         </tbody>
     </table>
@@ -61,19 +71,19 @@
     <nav th:if="${posts.totalPages > 1}">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${posts.first} ? 'disabled'">
-                <a class="page-link" th:href="@{/posts(page=0, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved})}">처음</a>
+                <a class="page-link" th:href="@{/posts(page=0, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">처음</a>
             </li>
             <li class="page-item" th:classappend="${posts.hasPrevious()} ? '' : 'disabled'">
-                <a class="page-link" th:href="@{/posts(page=${posts.number - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved})}">이전</a>
+                <a class="page-link" th:href="@{/posts(page=${posts.number - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">이전</a>
             </li>
             <li class="page-item disabled">
                 <a class="page-link" th:text="${posts.number + 1} + ' / ' + ${posts.totalPages}"></a>
             </li>
             <li class="page-item" th:classappend="${posts.hasNext()} ? '' : 'disabled'">
-                <a class="page-link" th:href="@{/posts(page=${posts.number + 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved})}">다음</a>
+                <a class="page-link" th:href="@{/posts(page=${posts.number + 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">다음</a>
             </li>
             <li class="page-item" th:classappend="${posts.last} ? 'disabled'">
-                <a class="page-link" th:href="@{/posts(page=${posts.totalPages - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved})}">끝</a>
+                <a class="page-link" th:href="@{/posts(page=${posts.totalPages - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">끝</a>
             </li>
         </ul>
     </nav>

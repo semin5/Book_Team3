@@ -25,6 +25,9 @@ public @Data class PostResponse {
     private LocalDateTime createdAt;
     private int viewCnt;
     private int memberId;
+    private int likeCount;
+    private int dislikeCount;
+    private int totalReactionCount;
 
     public static PostResponse from(Post post) {
         Set<String> tagNames = post.getTags() == null ? Set.of() :
