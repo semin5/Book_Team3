@@ -1,7 +1,7 @@
 package com.sec;
 
-import com.sec.entity.Member;
-import com.sec.entity.Post;
+import com.mongodb.client.MongoClients;
+import com.sec.mongo.repository.MapRepository;
 import com.sec.repository.MemberRepository;
 import com.sec.repository.PostRepository;
 import org.junit.jupiter.api.Test;
@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @SpringBootTest
 @Transactional
@@ -23,6 +21,10 @@ public class SpringBootLab09ApplicationTests {
 	@Autowired
 	private MemberRepository memberRepository;
 
+	@Autowired
+	private MapRepository mapRepository;
+
+	/*
 	@Test
 	void insertDummyPosts() {
 		String uniqueNickname = "테스터" + UUID.randomUUID().toString().substring(0, 6);
@@ -38,5 +40,30 @@ public class SpringBootLab09ApplicationTests {
 					.member(member)
 					.build());
 		}
+	}
+
+	@Test
+	void testMongoSave() {
+		MapInfo map = MapInfo.builder()
+				.postId(99)
+				.address("서울 중구 세종대로 110")
+				.latitude(37.5665)
+				.longitude(126.9780)
+				.build();
+
+		mapRepository.save(map); // ← 반드시 호출해야 저장됨
+
+		// 저장된 결과 확인 로그 (선택)
+		MapInfo saved = mapRepository.findByPostId(99);
+		System.out.println("저장 확인: " + saved);
+	}
+	*/
+	@Test
+	void checkMongoConnection() {
+		var client = MongoClients.create("mongodb://localhost:27017");
+		var db = client.getDatabase("team3");
+		System.out.println("현재 접속된 DB: " + db.getName());
+		System.out.println("컬렉션 목록:");
+		db.listCollectionNames().forEach(System.out::println);
 	}
 }

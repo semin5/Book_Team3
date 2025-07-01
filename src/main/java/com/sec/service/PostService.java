@@ -4,6 +4,9 @@ import com.sec.dto.*;
 import com.sec.entity.Member;
 import com.sec.entity.Post;
 import com.sec.entity.Tag;
+import com.sec.entity.Map;
+import com.sec.dto.MapRequest;
+import com.sec.mongo.repository.MapRepository;
 import com.sec.repository.MemberRepository;
 import com.sec.repository.PostRepository;
 import com.sec.repository.TagRepository;
@@ -28,6 +31,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final TagRepository tagRepository;
+    private final MapRepository mapRepository;
     private final ReactionService reactionService;
 
     @Transactional
@@ -47,8 +51,18 @@ public class PostService {
                 .collect(Collectors.toSet());
         post.setTags(tagSet);
 
-        postRepository.save(post);
-        return post.getPostId();
+        Post posts = postRepository.save(post);
+
+        MapRequest mapReq = request.getMapInfo();
+        Map map = new Map();
+        map.setAddress(mapReq.getAddress());
+        map.setLatitude(mapReq.getLatitude());
+        map.setLongitude(mapReq.getLongitude());
+        map.setPostId(posts.getPostId());
+
+        mapRepository.save(map);
+
+        return posts.getPostId();
     }
 
     @Transactional
@@ -80,13 +94,15 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PostResponse getPost(int postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        post.setView_cnt(post.getView_cnt() + 1);
 
-        return PostResponse.from(post); // DTO 변환
+        return PostResponse.from(post);
     }
+
     @Transactional(readOnly = true)
     public List<PostResponse> getAllPosts() {
         return postRepository.findAll().stream()

@@ -20,14 +20,13 @@
     </div>
 
     <label>태그</label><br/>
-    <th:block th:each="tag : ${allTags}">
-        <label>
-            <input type="checkbox" name="tagIds"
-                   th:value="${tag.tagId}"
-                   th:checked="${post.tags.contains(tag.tagId)}" />
-            <span th:text="${tag.name}"></span>
-        </label><br/>
-    </th:block>
+    <div class="form-check" th:each="tag : ${allTags}">
+        <input class="form-check-input" type="checkbox" name="tagIds"
+               th:id="'tag-' + ${tag.tagId}"
+               th:value="${tag.tagId}"
+               th:checked="${post.tags.contains(tag.tagId)}" />
+        <label class="form-check-label" th:for="'tag-' + ${tag.tagId}" th:text="${tag.name}"></label>
+    </div>
 
     <div class="mt-3">
         <button type="submit" class="btn btn-success">수정 완료</button>

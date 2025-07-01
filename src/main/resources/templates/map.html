@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>지도</title>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46cdb712fcd3d833c77bfb62dcb1b495&libraries=services"></script>
+</head>
+<body>
+<h2>장소 지도</h2>
+<div id="map" style="width:100%;height:400px;"></div>
+
+<script th:inline="javascript">
+    var lat = [[${latitude}]];
+    var lng = [[${longitude}]];
+    var placeName = [[${placeName}]];
+
+    var container = document.getElementById('map');
+    var options = {
+        center: new kakao.maps.LatLng(lat, lng),
+        level: 3
+    };
+    var map = new kakao.maps.Map(container, options);
+
+    var markerPosition  = new kakao.maps.LatLng(lat, lng);
+    var marker = new kakao.maps.Marker({
+        position: markerPosition,
+        map: map
+    });
+
+    var infowindow = new kakao.maps.InfoWindow({
+        content: '<div style="padding:5px;">' + placeName + '</div>'
+    });
+
+    kakao.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(map, marker);
+    });
+</script>
+</body>
+</html>

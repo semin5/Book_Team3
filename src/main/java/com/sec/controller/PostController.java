@@ -87,7 +87,10 @@ public class PostController {
     }
 
     @PostMapping("/write")
-    public String createPost(@ModelAttribute @Valid PostCreateRequest request, BindingResult bindingResult, @AuthenticationPrincipal CustomOAuth2User principal, Model model) {
+    public String createPost(@ModelAttribute @Valid PostCreateRequest request,
+                             BindingResult bindingResult,
+                             @AuthenticationPrincipal CustomOAuth2User principal,
+                             Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("allTags", tagService.findAllTags());

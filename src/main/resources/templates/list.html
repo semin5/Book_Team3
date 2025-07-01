@@ -51,6 +51,7 @@
             <th>작성자</th>
             <th>작성일</th>
             <th>상태</th>
+            <th>조회수</th>
             <th>추천</th>
         </tr>
         </thead>
@@ -63,6 +64,7 @@
             <td>
                 <span th:text="${post.isSolved} ? '해결됨' : '미해결'" th:class="${post.isSolved} ? 'text-success' : 'text-danger'"></span>
             </td>
+            <td th:text="${post.viewCnt}">0</td>
             <td th:text="${post.totalReactionCount}">0</td>
         </tr>
         </tbody>

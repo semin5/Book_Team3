@@ -13,18 +13,21 @@
     <br>
     <div class="text-muted  text-end ms-3">
         <span th:text="'작성자: ' + ${post.nickname}"></span> |
-        <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+        <span th:text="'작성일: ' + ${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></span> |
+        <span th:text="'조회수: ' + ${post.viewCnt}"></span>
     </div>
 
-    <div class="mb-4">
-        <span th:each="tag : ${post.tags}" class="badge bg-info me-1" th:text="${tag}"></span>
-    </div>
+    <hr>
 
     <div class="mb-5">
         <p th:text="${post.content}"></p>
     </div>
 
-    <hr class="my-5">
+    <div>
+        <span th:each="tag : ${post.tags}" class="badge bg-info me-1" th:text="${tag}"></span>
+    </div>
+
+    <hr>
 
     <div class="mb-3">
         <form th:action="@{/posts/{id}/react(id=${post.postId})}" method="post" style="display:inline;">
