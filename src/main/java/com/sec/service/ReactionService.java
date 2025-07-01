@@ -2,20 +2,14 @@ package com.sec.service;
 
 import com.sec.dto.ReactionType;
 import com.sec.dto.TargetType;
-import com.sec.entity.Member;
-import com.sec.entity.Post;
 import com.sec.entity.Reaction;
-import com.sec.repository.MemberRepository;
-import com.sec.repository.PostRepository;
-import com.sec.repository.ReactionRepository;
+import com.sec.repository.jpa.MemberRepository;
+import com.sec.repository.jpa.ReactionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

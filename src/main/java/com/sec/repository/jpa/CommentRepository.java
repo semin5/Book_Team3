@@ -1,4 +1,4 @@
-package com.sec.repository;
+package com.sec.repository.jpa;
 
 import com.sec.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;

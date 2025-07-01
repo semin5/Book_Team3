@@ -1,4 +1,4 @@
-package com.sec.repository;
+package com.sec.repository.jpa;
 
 import com.sec.entity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;

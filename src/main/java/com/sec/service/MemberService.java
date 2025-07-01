@@ -1,7 +1,7 @@
 package com.sec.service;
 
 import com.sec.entity.Member;
-import com.sec.repository.MemberRepository;
+import com.sec.repository.jpa.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

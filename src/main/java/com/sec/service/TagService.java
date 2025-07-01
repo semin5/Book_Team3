@@ -2,7 +2,7 @@ package com.sec.service;
 
 import com.sec.dto.TagDto;
 import com.sec.entity.Tag;
-import com.sec.repository.TagRepository;
+import com.sec.repository.jpa.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,9 +1,9 @@
 package com.sec;
 
 import com.mongodb.client.MongoClients;
-import com.sec.mongo.repository.MapRepository;
-import com.sec.repository.MemberRepository;
-import com.sec.repository.PostRepository;
+import com.sec.repository.mongo.MapRepository;
+import com.sec.repository.jpa.MemberRepository;
+import com.sec.repository.jpa.PostRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

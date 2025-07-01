@@ -1,4 +1,4 @@
-package com.sec.mongo.repository;
+package com.sec.repository.mongo;
 
 import com.sec.entity.Map;
 import org.springframework.data.mongodb.repository.MongoRepository;
