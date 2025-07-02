@@ -100,6 +100,32 @@ public class CommentService {
     }
 
     @Transactional
+    public void updateComment(Integer commentId, String content, String bookTitle, String bookAuthor) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+
+        if (bookTitle != null && bookAuthor != null) {
+            Book existingBook = bookRepository.findByTitleAndAuthor(bookTitle.trim(), bookAuthor.trim())
+                    .orElse(null);
+
+            if (existingBook != null) {
+                comment.setBook(existingBook);
+            } else {
+                Book newBook = Book.builder()
+                        .title(bookTitle.trim())
+                        .author(bookAuthor.trim())
+                        .build();
+
+                bookRepository.save(newBook);
+                comment.setBook(newBook);
+            }
+        }
+
+        comment.setContent(content);
+        commentRepository.save(comment);
+    }
+
+    @Transactional
     public void adoptComment(int commentId, int postId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));

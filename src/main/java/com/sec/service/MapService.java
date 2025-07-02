@@ -13,6 +13,9 @@ public class MapService {
 
     private final MapRepository mapRepository;
 
+    public List<Map> findAll() {
+        return mapRepository.findAll();
+    }
     public Map findByPostId(int postId) {
         return mapRepository.findByPostId(postId);
     }

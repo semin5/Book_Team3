@@ -1,38 +1,140 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>지도</title>
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46cdb712fcd3d833c77bfb62dcb1b495&libraries=services"></script>
+    <title>머물곳</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46cdb712fcd3d833c77bfb62dcb1b495&autoload=false"></script> <!-- ✅ 여기에 본인 앱키 입력 -->
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
 </head>
-<body>
-<h2>장소 지도</h2>
-<div id="map" style="width:100%;height:400px;"></div>
+<body class="bg-light">
+<div class="container">
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand fs-1" th:href="@{/posts}">📚 머물곳</a>
+        <div>
+            <div th:if="${currentUserId != null}">
+                <form th:action="@{/logout}" method="post">
+                    <button class="btn btn-danger">로그아웃</button>
+                </form>
+            </div>
+            <div th:if="${currentUserId == null}">
+                <a th:href="@{/oauth2/authorization/google}" class="btn btn-primary">로그인</a>
+            </div>
+        </div>
+    </nav>
+</div>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="d-inline me-3">장소 지도</h2>
+            <a href="/posts" class="btn btn-success">게시글로 보기</a>
+        </div>
+        <a href="/posts/write" class="btn btn-primary">글쓰기</a>
+    </div>
+
+    <form method="get" th:action="@{/map}" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="keyword" th:value="${condition.keyword}"
+                   class="form-control" placeholder="본문 + 내용">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="tag">
+                <option th:value="null" th:selected="${condition.tag == null}">전체</option>
+                <option th:value="'#조용한'" th:selected="${condition.tag == '#조용한'}">#조용한</option>
+                <option th:value="'#고요한'" th:selected="${condition.tag == '#고요한'}">#고요한</option>
+                <option th:value="'#집중되는'" th:selected="${condition.tag == '#집중되는'}">#집중되는</option>
+                <option th:value="'#공부방'" th:selected="${condition.tag == '#공부방'}">#공부방</option>
+                <option th:value="'#추천'" th:selected="${condition.tag == '#추천'}">#추천</option>
+                <option th:value="'#비추천'" th:selected="${condition.tag == '#비추천'}">#비추천</option>
+                <option th:value="'#시끄러운'" th:selected="${condition.tag == '#시끄러운'}">#시끄러운</option>
+                <option th:value="'#정신없는'" th:selected="${condition.tag == '#정신없는'}">#정신없는</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select class="form-select" name="isSolved">
+                <option th:value="null" th:selected="${condition.isSolved == null}">전체</option>
+                <option th:value="false" th:selected="${condition.isSolved == false}">미해결</option>
+                <option th:value="true" th:selected="${condition.isSolved == true}">해결됨</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="sort">
+                <option value="createdAt" th:selected="${sort == 'createdAt'}">최신순</option>
+                <option value="like" th:selected="${sort == 'like'}">좋아요순</option>
+                <option value="dislike" th:selected="${sort == 'dislike'}">싫어요순</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-secondary w-100" type="submit">검색</button>
+        </div>
+    </form>
+
+    <div id="map" class="border rounded shadow-sm mt-3"></div>
+</div>
 
 <script th:inline="javascript">
-    var lat = [[${latitude}]];
-    var lng = [[${longitude}]];
-    var placeName = [[${placeName}]];
+    /*<![CDATA[*/
+    const locations = [[${locations}]];
+    /*]]>*/
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        kakao.maps.load(function () {
+            const container = document.getElementById('map');
+            const options = {
+                center: new kakao.maps.LatLng(36.5, 127.5),
+                level: 13
+            };
+            const map = new kakao.maps.Map(container, options);
 
-    var container = document.getElementById('map');
-    var options = {
-        center: new kakao.maps.LatLng(lat, lng),
-        level: 3
-    };
-    var map = new kakao.maps.Map(container, options);
+            const infowindows = [];
 
-    var markerPosition  = new kakao.maps.LatLng(lat, lng);
-    var marker = new kakao.maps.Marker({
-        position: markerPosition,
-        map: map
-    });
+            locations.forEach(loc => {
+                const position = new kakao.maps.LatLng(loc.latitude, loc.longitude);
+                const marker = new kakao.maps.Marker({
+                    map: map,
+                    position: position
+                });
 
-    var infowindow = new kakao.maps.InfoWindow({
-        content: '<div style="padding:5px;">' + placeName + '</div>'
-    });
+                const isSolvedText = loc.isSolved ? "✅ 해결됨" : "❌ 미해결";
 
-    kakao.maps.event.addListener(marker, 'click', function() {
-        infowindow.open(map, marker);
+                const content = `
+                    <div style="padding: 10px; min-width: 250px; width: max-content; font-size: 14px; font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.5; white-space: nowrap;">
+                        <div><strong>주소:</strong> ${loc.address}</div>
+                        <div><strong>제목:</strong> ${loc.title}</div>
+                        <div><strong>상태:</strong> ${isSolvedText}</div>
+                        <div class="mt-2" style="text-align: right;">
+                            <a href="/posts/${loc.postId}" class="btn btn-sm btn-primary">게시글로 이동</a>
+                        </div>
+                    </div>
+                `;
+
+                const infowindow = new kakao.maps.InfoWindow({
+                    content: content,
+                    disableAutoPan: true
+                });
+                infowindows.push(infowindow);
+
+                let isOpen = false;
+
+                kakao.maps.event.addListener(marker, 'click', function () {
+                    if (isOpen) {
+                        infowindow.close();
+                        isOpen = false;
+                    } else {
+                        infowindows.forEach(iw => iw.close());
+                        infowindow.open(map, marker);
+                        isOpen = true;
+                    }
+                });
+            });
+        });
     });
 </script>
 </body>
