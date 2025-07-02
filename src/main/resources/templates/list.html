@@ -18,7 +18,7 @@
             <input type="text" name="keyword" th:value="${condition.keyword}"
                    class="form-control" placeholder="본문 + 내용">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <select class="form-select" name="tag">
                 <option th:value="null" th:selected="${condition.tag == null}">전체</option>
                 <option th:value="'#조용한'" th:selected="${condition.tag == '#조용한'}">#조용한</option>
@@ -32,7 +32,7 @@
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <select class="form-select" name="isSolved">
                 <option th:value="null" th:selected="${condition.isSolved == null}">전체</option>
                 <option th:value="false" th:selected="${condition.isSolved == false}">미해결</option>

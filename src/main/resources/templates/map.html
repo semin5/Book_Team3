@@ -62,13 +62,6 @@
                 <option th:value="true" th:selected="${condition.isSolved == true}">해결됨</option>
             </select>
         </div>
-        <div class="col-md-2">
-            <select class="form-select" name="sort">
-                <option value="createdAt" th:selected="${sort == 'createdAt'}">최신순</option>
-                <option value="like" th:selected="${sort == 'like'}">좋아요순</option>
-                <option value="dislike" th:selected="${sort == 'dislike'}">싫어요순</option>
-            </select>
-        </div>
 
         <div class="col-md-2">
             <button class="btn btn-secondary w-100" type="submit">검색</button>
