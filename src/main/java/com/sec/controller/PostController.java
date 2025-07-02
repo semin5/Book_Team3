@@ -2,6 +2,7 @@ package com.sec.controller;
 
 import com.sec.dto.*;
 import com.sec.entity.Comment;
+import com.sec.entity.Image;
 import com.sec.entity.Map;
 import com.sec.entity.Tag;
 import com.sec.security.CustomOAuth2User;
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +35,7 @@ public class PostController {
     private final CommentService commentService;
     private final ReactionService reactionService;
     private final MapService mapService;
+    private final ImageService imageService;
 
     @GetMapping
     public String listPosts(@ModelAttribute("condition") PostSearchCondition condition, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, Model model,  @RequestParam(value = "sort", defaultValue = "createdAt") String sortType) {
@@ -76,7 +80,9 @@ public class PostController {
         List<Comment> comments = commentService.getCommentsByPostId(id);
         int likeCount = reactionService.getReactionCount(id, TargetType.POST, ReactionType.LIKE);
         int dislikeCount = reactionService.getReactionCount(id, TargetType.POST, ReactionType.DISLIKE);
+        List<Image> images = imageService.getImagesByPostId(post.getPostId());
 
+        model.addAttribute("images", images);
         model.addAttribute("post", post);
         model.addAttribute("comments", comments);
         model.addAttribute("likeCount", likeCount);
@@ -94,7 +100,12 @@ public class PostController {
     }
 
     @PostMapping("/write")
-    public String createPost(@ModelAttribute @Valid PostCreateRequest request, BindingResult bindingResult, @AuthenticationPrincipal CustomOAuth2User principal, Model model) {
+    public String createPost(@RequestParam java.util.Map<String, String> paramMap,
+            @ModelAttribute @Valid PostCreateRequest request,
+                             BindingResult bindingResult,
+                             @AuthenticationPrincipal CustomOAuth2User principal,
+                             Model model,
+                             @RequestParam(value = "image", required = false) MultipartFile[] image) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("allTags", tagService.findAllTags());
@@ -104,6 +115,18 @@ public class PostController {
         int memberId = principal.getMember().getMemberId();
         int postid = postService.createPost(request, memberId);
 
+        if (image != null) {
+            for (MultipartFile images : image) {
+                if (!images.isEmpty()) {
+                    try {
+                        imageService.storeImage(images, postid);
+                    } catch (IOException e) {
+                        e.printStackTrace(); // 필요시 로깅 처리
+                    }
+                }
+            }
+        }
+        System.out.println("💡 파라미터 개수: " + paramMap.size());
         return "redirect:/posts/" + postid;
     }
 
@@ -113,13 +136,39 @@ public class PostController {
 
         model.addAttribute("post", post);
         model.addAttribute("allTags", tagService.findAllTags());
+
+        List<Image> images = imageService.getImagesByPostId(id);
+        if (!images.isEmpty()) {
+            model.addAttribute("imageId", images.get(0).getId());
+        }
+        model.addAttribute("allTags", tagService.findAllTags());
         return "post_edit";
     }
 
     @PostMapping("/edit/{id}")
-    public String updatePost(@PathVariable int id, @ModelAttribute PostCreateRequest request, @AuthenticationPrincipal CustomOAuth2User principal) {
+    public String updatePost(@PathVariable int id,
+                             @ModelAttribute PostCreateRequest request,
+                             @AuthenticationPrincipal CustomOAuth2User principal,
+                             @RequestParam(value = "image", required = false) List<MultipartFile> newImage,
+                             @RequestParam(value = "deleteImage", required = false) String deleteImageFlag) throws IOException{
         int memberId = principal.getMember().getMemberId();
         postService.updatePost(id, request, memberId);
+
+        boolean imageDeleted = false;
+
+        if ("on".equals(deleteImageFlag)) {
+            imageService.deleteImagesByPostId(id);
+            imageDeleted = true;
+        }
+
+        if (newImage != null && !newImage.isEmpty()) {
+            for (MultipartFile image : newImage) {
+                if (!image.isEmpty()) {
+                    imageService.storeImage(image, id);
+                }
+            }
+        }
+
         return "redirect:/posts/" + id;
     }
 
@@ -127,6 +176,8 @@ public class PostController {
     public String deletePost(@PathVariable int id, @AuthenticationPrincipal CustomOAuth2User principal) {
         int memberId = principal.getMember().getMemberId();
         postService.deletePost(id, memberId);
+        mapService.deleteByPostId(id);
+        imageService.deleteImagesByPostId(id);
         return "redirect:/posts";
     }
 }

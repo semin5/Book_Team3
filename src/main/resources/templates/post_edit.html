@@ -22,7 +22,7 @@
 </div>
 <div class="container">
     <h2 class="mb-4">게시글 수정</h2>
-<form th:action="@{/posts/edit/{id}(id=${post.postId})}" th:object="${post}" method="post">
+<form th:action="@{/posts/edit/{id}(id=${post.postId})}" th:object="${post}" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="title" class="form-label">제목</label>
         <input type="text" th:field="*{title}" class="form-control" id="title" required />
@@ -35,12 +35,28 @@
         <textarea th:field="*{content}" class="form-control" id="content" rows="8" required></textarea>
     </div>
 
+    <div class="mb-3" id="image-container" th:if="${imageId != null}">
+        <label class="form-label">현재 이미지</label><br/>
+        <img th:src="@{/images/{id}(id=${imageId})}" alt="첨부 이미지"
+             class="img-thumbnail mb-2" style="max-width: 300px;"><br/>
+
+        <!-- 삭제 버튼 -->
+        <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="markImageForDeletion()">이미지 삭제</button>
+    </div>
+
+    <div id="deleteImageFlag"></div>
+
+    <div class="mb-3">
+        <label for="image" class="form-label">이미지 업로드</label>
+        <input type="file" class="form-control" id="image" name="image" multiple accept="image/*" onchange="checkFileCount(this)">
+    </div>
+
     <label>태그</label><br/>
     <div class="form-check" th:each="tag : ${allTags}">
         <input class="form-check-input" type="checkbox" name="tagIds"
                th:id="'tag-' + ${tag.tagId}"
                th:value="${tag.tagId}"
-               th:checked="${post.tags.contains(tag.tagId)}" />
+               th:checked="${post.tagIds.contains(tag.tagId)}" />
         <label class="form-check-label" th:for="'tag-' + ${tag.tagId}" th:text="${tag.name}"></label>
     </div>
 
@@ -120,6 +136,25 @@
             });
         });
     });
+</script>
+<script>
+    function markImageForDeletion() {
+        // 이미지 숨기기
+        const imageContainer = document.getElementById("image-container");
+        imageContainer.style.display = "none";
+
+        // 삭제 플래그 input 추가
+        const flagDiv = document.getElementById("deleteImageFlag");
+        flagDiv.innerHTML = '<input type="hidden" name="deleteImage" value="on">';
+    }
+</script>
+<script>
+    function checkFileCount(input) {
+        if (input.files.length > 2) {
+            alert("최대 2개까지만 업로드할 수 있습니다.");
+            input.value = ''; // 선택 초기화
+        }
+    }
 </script>
 </body>
 </html>

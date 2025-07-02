@@ -23,7 +23,7 @@
 <div class="container">
     <h2 class="mb-4">새 게시글 작성</h2>
 
-    <form th:action="@{/posts/write}" method="post" th:object="${postCreateRequest}">
+    <form th:action="@{/posts/write}" method="post" enctype="multipart/form-data" th:object="${postCreateRequest}">
         <div class="mb-3">
             <label for="title" class="form-label">제목</label>
             <input type="text" th:field="*{title}" class="form-control" id="title" placeholder="제목을 입력하세요" required>
@@ -34,6 +34,11 @@
             <label for="content" class="form-label">내용</label>
             <textarea th:field="*{content}" class="form-control" id="content" rows="6" placeholder="본문 내용을 작성하세요" required></textarea>
             <div th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="text-danger mt-1"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="image" class="form-label">이미지 업로드</label>
+            <input type="file" class="form-control" id="image" name="image" multiple accept="image/*" onchange="checkFileCount(this)">
         </div>
 
         <label>태그</label><br/>
@@ -124,6 +129,14 @@
 
 
     });
+</script>
+<script>
+    function checkFileCount(input) {
+        if (input.files.length > 2) {
+            alert("최대 2개까지만 업로드할 수 있습니다.");
+            input.value = ''; // 선택 초기화
+        }
+    }
 </script>
 </body>
 </html>

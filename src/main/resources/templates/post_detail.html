@@ -45,7 +45,13 @@
     <div class="mb-5">
         <p th:text="${post.content}" style="min-height: 250px;"></p>
     </div>
-
+    <div th:if="${images != null and !#lists.isEmpty(images)}" class="my-3">
+        <div class="row">
+            <div class="col-md-4 mb-3" th:each="image : ${images}">
+                <img th:src="@{/images/{id}(id=${image.id})}" class="img-fluid rounded" alt="첨부 이미지">
+            </div>
+        </div>
+    </div>
     <hr>
 
     <div th:if="${post.mapInfo != null}" class="mb-4">

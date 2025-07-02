@@ -16,4 +16,7 @@ public class MapService {
     public Map findByPostId(int postId) {
         return mapRepository.findByPostId(postId);
     }
+    public void deleteByPostId(int postId) {
+        mapRepository.deleteByPostId(postId);
+    }
 }

@@ -23,6 +23,7 @@ public @Data class PostResponse {
     private boolean isSolved;
     private String nickname;
     private Set<String> tags;
+    private Set<Integer> tagIds;
     private LocalDateTime createdAt;
     private int viewCnt;
     private int memberId;
@@ -41,6 +42,10 @@ public @Data class PostResponse {
                         .map(Tag::getName)
                         .collect(Collectors.toSet());
 
+        Set<Integer> tagIds = post.getTags() == null ? Set.of() :
+                post.getTags().stream()
+                        .map(Tag::getTagId)
+                        .collect(Collectors.toSet());
 
         return PostResponse.builder()
                 .postId(post.getPostId())
@@ -49,6 +54,7 @@ public @Data class PostResponse {
                 .nickname(post.getMember().getNickname())
                 .isSolved(Boolean.TRUE.equals(post.getIsSolved()))
                 .tags(tagNames)
+                .tagIds(tagIds)
                 .createdAt(post.getCreatedAt())
                 .viewCnt(post.getView_cnt())
                 .memberId(post.getMember().getMemberId())
