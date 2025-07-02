@@ -66,10 +66,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public String postDetail(@PathVariable int id,
-                             @SessionAttribute(value = "loginMember", required = false) Object loginMember,
-                             Model model,
-                             @AuthenticationPrincipal CustomOAuth2User principal) {
+    public String postDetail(@PathVariable int id, @SessionAttribute(value = "loginMember", required = false) Object loginMember, Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
 
         PostResponse post = postService.getPost(id);
         Map map = mapService.findByPostId(id);
@@ -100,12 +97,7 @@ public class PostController {
     }
 
     @PostMapping("/write")
-    public String createPost(@RequestParam java.util.Map<String, String> paramMap,
-            @ModelAttribute @Valid PostCreateRequest request,
-                             BindingResult bindingResult,
-                             @AuthenticationPrincipal CustomOAuth2User principal,
-                             Model model,
-                             @RequestParam(value = "image", required = false) MultipartFile[] image) {
+    public String createPost(@RequestParam java.util.Map<String, String> paramMap, @ModelAttribute @Valid PostCreateRequest request, BindingResult bindingResult, @AuthenticationPrincipal CustomOAuth2User principal, Model model, @RequestParam(value = "image", required = false) MultipartFile[] image) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("allTags", tagService.findAllTags());
@@ -121,12 +113,11 @@ public class PostController {
                     try {
                         imageService.storeImage(images, postid);
                     } catch (IOException e) {
-                        e.printStackTrace(); // 필요시 로깅 처리
+                        e.printStackTrace();
                     }
                 }
             }
         }
-        System.out.println("💡 파라미터 개수: " + paramMap.size());
         return "redirect:/posts/" + postid;
     }
 
@@ -146,11 +137,7 @@ public class PostController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updatePost(@PathVariable int id,
-                             @ModelAttribute PostCreateRequest request,
-                             @AuthenticationPrincipal CustomOAuth2User principal,
-                             @RequestParam(value = "image", required = false) List<MultipartFile> newImage,
-                             @RequestParam(value = "deleteImage", required = false) String deleteImageFlag) throws IOException{
+    public String updatePost(@PathVariable int id, @ModelAttribute PostCreateRequest request, @AuthenticationPrincipal CustomOAuth2User principal, @RequestParam(value = "image", required = false) List<MultipartFile> newImage, @RequestParam(value = "deleteImage", required = false) String deleteImageFlag) throws IOException{
         int memberId = principal.getMember().getMemberId();
         postService.updatePost(id, request, memberId);
 

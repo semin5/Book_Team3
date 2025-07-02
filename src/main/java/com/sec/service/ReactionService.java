@@ -21,7 +21,7 @@ public class ReactionService {
 
     @Transactional
     public int react(int targetId, int memberId, TargetType targetType, String reactionType) {
-        ReactionType type = ReactionType.valueOf(reactionType.toUpperCase()); // LIKE or DISLIKE
+        ReactionType type = ReactionType.valueOf(reactionType.toUpperCase());
         Reaction existing = reactionRepository.findByMember_MemberIdAndTargetTypeAndTargetId(memberId, targetType, targetId).orElse(null);
 
         if (existing != null) {

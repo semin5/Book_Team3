@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         PageableHandlerMethodArgumentResolver resolver = new PageableHandlerMethodArgumentResolver();
-        resolver.setFallbackPageable(PageRequest.of(0, 10)); // 기본 페이지 사이즈 설정
+        resolver.setFallbackPageable(PageRequest.of(0, 10));
         resolvers.add(resolver);
     }
 }

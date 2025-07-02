@@ -32,11 +32,11 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        return member.getEmail(); // 로그인 시 대표 식별자
+        return member.getEmail();
     }
 
     @Override
     public <A> A getAttribute(String name) {
-        return (A) attributes.get(name); // 직접 구현
+        return (A) attributes.get(name);
     }
 }

@@ -40,7 +40,7 @@ public class ImageController {
             imageService.deleteImagesByPostId(image.getPostId());
         }
 
-        return "redirect:" + referer; // 수정 페이지로 리다이렉트
+        return "redirect:" + referer;
     }
 
 }
