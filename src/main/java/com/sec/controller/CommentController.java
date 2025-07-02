@@ -35,11 +35,12 @@ public class CommentController {
     }
 
     @PostMapping("/{id}/update")
-    public String updateComment(@PathVariable Integer id, @RequestParam String content, @RequestParam Integer postId) {
+    public String updateComment(@PathVariable Integer id, @RequestParam String content, @RequestParam Integer postId, @RequestParam String bookTitle,
+                                @RequestParam String bookAuthor, @RequestParam(required = false) Integer bookId) {
         if (content == null || content.trim().isEmpty()) {
             return "redirect:/posts/" + postId + "?error=댓글 내용은 비어 있을 수 없습니다";
         }
-        commentService.updateComment(id, content);
+        commentService.updateComment(id, content, bookTitle, bookAuthor, bookId);
         return "redirect:/posts/" + postId;
     }
     @PostMapping("/{commentId}/adopt")

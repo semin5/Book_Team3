@@ -100,10 +100,19 @@
     </div>
 
     <div th:each="comment : ${comments}" class="border p-3 mb-3 bg-white rounded shadow-sm">
-        <div class="mb-1">
-            <strong th:text="${comment.member.nickname}">작성자</strong>
-            <small class="text-muted" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
+
+        <div class="d-flex justify-content-between mb-1">
+            <div>
+                <strong th:text="${comment.member.nickname}">작성자</strong>
+                <small class="text-muted" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</small>
+            </div>
+
+            <div class="text-end text-muted small" th:if="${comment.book != null}">
+                <div th:text="'📕제목: ' + ${comment.book.title}">책 제목</div>
+                <div th:text="'✍️저자: ' + ${comment.book.author}">책 저자</div>
+            </div>
         </div>
+
         <div th:text="${comment.content}" class="mb-2"></div>
         <span class="badge bg-success" th:if="${comment.is_selected}">✅ 채택된 댓글</span>
 
@@ -115,7 +124,10 @@
 
             <form th:action="@{/comments/{id}/update(id=${comment.commentId})}" method="post" style="display:inline;" class="ms-2">
                 <input type="hidden" name="postId" th:value="${post.postId}" />
-                <input type="text" name="content" th:value="${comment.content}" required class="form-control d-inline-block" style="width: 82%;">
+                <input type="hidden" name="bookId" th:value="${comment.book != null ? comment.book.bookId : ''}" />
+                <input type="text" name="content" th:value="${comment.content}" required class="form-control" style="flex: 1 1 180px;" placeholder="댓글 수정">
+                <input type="text" name="bookTitle" th:value="${comment.book != null ? comment.book.title : ''}" class="form-control" style="flex: 1 1 180px;" placeholder="책 제목">
+                <input type="text" name="bookAuthor" th:value="${comment.book != null ? comment.book.author : ''}" class="form-control" style="flex: 1 1 180px;" placeholder="책 저자">
                 <button class="btn btn-sm btn-outline-primary">수정</button>
             </form>
         </div>
@@ -131,19 +143,31 @@
 
     <hr class="my-4">
     <h5>✏️ 댓글 작성</h5>
-    <div th:if="${currentUserId != null}">
+    <div th:if="${currentUserId != null and !post.isSolved}">
         <form th:action="@{/comments}" method="post" class="mt-3">
             <input type="hidden" name="postId" th:value="${post.postId}" />
 
-            <div class="row">
-                <div class="col-10">
-                    <textarea name="content" rows="3" class="form-control" placeholder="댓글을 입력하세요" required style="resize: none;"></textarea>
+            <div class="mb-2">
+                <textarea name="content" rows="3" class="form-control" placeholder="댓글을 입력하세요" required style="resize: none;"></textarea>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1 d-flex">
+                    <input type="text" name="bookTitle" placeholder="책 제목" class="form-control me-2" required>
+                    <input type="text" name="bookAuthor" placeholder="책 저자" class="form-control" required>
                 </div>
-                <div class="col-2 d-grid">
+                <div class="ms-2">
                     <button type="submit" class="btn btn-success">등록</button>
                 </div>
             </div>
         </form>
+    </div>
+
+    <div th:if="${currentUserId == null}" class="text-muted mt-2">
+        <p>※ 댓글을 작성하려면 <a th:href="@{/oauth2/authorization/google}">Google 로그인</a> 해주세요.</p>
+    </div>
+    <div th:if="${currentUserId != null and post.isSolved}" class="text-muted mt-2">
+        ✅ 채택된 댓글이 있어 더 이상 댓글을 작성할 수 없습니다.
     </div>
 
     <div th:if="${currentUserId == post.memberId}" class="mt-3">
@@ -154,9 +178,6 @@
         </form>
     </div>
 
-    <div th:if="${currentUserId == null}" class="text-muted mt-2">
-        <p>※ 댓글을 작성하려면 <a th:href="@{/oauth2/authorization/google}">Google 로그인</a> 해주세요.</p>
-    </div>
     <br class="mt-3">
 </div>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46cdb712fcd3d833c77bfb62dcb1b495&autoload=false&libraries=services"></script>

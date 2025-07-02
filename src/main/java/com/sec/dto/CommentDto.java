@@ -12,4 +12,7 @@ public @Data class CommentDto {
     private Integer postId;
     private Integer memberId;
     private String content;
+    private Integer bookId;
+    private String bookTitle;
+    private String bookAuthor;
 }
