@@ -56,4 +56,24 @@ public class CommentService {
         comment.setContent(content);
         commentRepository.save(comment);
     }
+
+    @Transactional
+    public void adoptComment(int commentId, int postId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+
+        if (!post.getIsSolved()) {
+            post.setIsSolved(true);
+            postRepository.save(post);
+
+            comment.setIs_selected(true);
+            commentRepository.save(comment);
+        } else {
+            throw new RuntimeException("이미 채택된 게시글입니다.");
+
+        }
+    }
 }

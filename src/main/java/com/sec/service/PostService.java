@@ -33,6 +33,7 @@ public class PostService {
     private final TagRepository tagRepository;
     private final MapRepository mapRepository;
     private final ReactionService reactionService;
+    private final MapService mapService;
 
     @Transactional
     public int createPost(PostCreateRequest request, int memberId) {
@@ -76,12 +77,27 @@ public class PostService {
 
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
+        post.setCreatedAt(LocalDateTime.now());
 
         Set<Tag> updatedTags = request.getTagIds().stream()
                 .map(id -> tagRepository.findById(id)
                         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 태그 ID입니다: " + id)))
                 .collect(Collectors.toSet());
         post.setTags(updatedTags);
+
+        MapRequest mapReq = request.getMapInfo();
+        Map map = Optional.ofNullable(mapRepository.findByPostId(postId))
+                .orElseGet(() -> {
+                    Map newMap = new Map();
+                    newMap.setPostId(postId);
+                    return newMap;
+                });
+
+        map.setAddress(mapReq.getAddress());
+        map.setLatitude(mapReq.getLatitude());
+        map.setLongitude(mapReq.getLongitude());
+
+        mapRepository.save(map);
     }
 
     @Transactional
@@ -99,15 +115,8 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
         post.setView_cnt(post.getView_cnt() + 1);
-
-        return PostResponse.from(post);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PostResponse> getAllPosts() {
-        return postRepository.findAll().stream()
-                .map(PostResponse::from)
-                .collect(Collectors.toList());
+        Map map = mapService.findByPostId(postId);
+        return PostResponse.from(post, map);
     }
 
     @Transactional(readOnly = true)

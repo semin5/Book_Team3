@@ -42,4 +42,10 @@ public class CommentController {
         commentService.updateComment(id, content);
         return "redirect:/posts/" + postId;
     }
+    @PostMapping("/{commentId}/adopt")
+    public String adoptComment(@PathVariable int commentId, @RequestParam int postId) {
+        commentService.adoptComment(commentId, postId);
+        return "redirect:/posts/" + postId;
+    }
+
 }

@@ -19,6 +19,14 @@ public @Data class MapRequest {
     @NotBlank(message = "주소는 필수입니다.")
     private String address;
 
+    public static MapRequest mapRequest(Map map) {
+        return MapRequest.builder()
+                .address(map.getAddress())
+                .latitude(map.getLatitude())
+                .longitude(map.getLongitude())
+                .build();
+    }
+
     public Map toDocument(int postId) {
         return Map.builder()
                 .postId(postId)
@@ -27,4 +35,5 @@ public @Data class MapRequest {
                 .longitude(this.longitude)
                 .build();
     }
+
 }

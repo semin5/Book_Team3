@@ -1,5 +1,6 @@
 package com.sec.dto;
 
+import com.sec.entity.Map;
 import com.sec.entity.Post;
 import com.sec.entity.Tag;
 import lombok.AllArgsConstructor;
@@ -28,12 +29,18 @@ public @Data class PostResponse {
     private int likeCount;
     private int dislikeCount;
     private int totalReactionCount;
+    private MapRequest mapInfo;
 
     public static PostResponse from(Post post) {
+        return from(post, null);
+    }
+
+    public static PostResponse from(Post post, Map map) {
         Set<String> tagNames = post.getTags() == null ? Set.of() :
                 post.getTags().stream()
                         .map(Tag::getName)
                         .collect(Collectors.toSet());
+
 
         return PostResponse.builder()
                 .postId(post.getPostId())
@@ -45,6 +52,7 @@ public @Data class PostResponse {
                 .createdAt(post.getCreatedAt())
                 .viewCnt(post.getView_cnt())
                 .memberId(post.getMember().getMemberId())
+                .mapInfo(map != null ? MapRequest.mapRequest(map) : null)
                 .build();
     }
 }

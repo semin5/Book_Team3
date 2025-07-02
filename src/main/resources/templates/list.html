@@ -62,7 +62,7 @@
             <td th:text="${post.nickname}"></td>
             <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
             <td>
-                <span th:text="${post.isSolved} ? '해결됨' : '미해결'" th:class="${post.isSolved} ? 'text-success' : 'text-danger'"></span>
+                <span th:text="${post.isSolved} ? '해결됨' : '미해결'" th:class="${post.isSolved} ? 'text-success' : 'text-secondary'"></span>
             </td>
             <td th:text="${post.viewCnt}">0</td>
             <td th:text="${post.totalReactionCount}">0</td>

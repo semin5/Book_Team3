@@ -2,12 +2,10 @@ package com.sec.controller;
 
 import com.sec.dto.*;
 import com.sec.entity.Comment;
+import com.sec.entity.Map;
 import com.sec.entity.Tag;
 import com.sec.security.CustomOAuth2User;
-import com.sec.service.CommentService;
-import com.sec.service.PostService;
-import com.sec.service.ReactionService;
-import com.sec.service.TagService;
+import com.sec.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +31,7 @@ public class PostController {
     private final TagService tagService;
     private final CommentService commentService;
     private final ReactionService reactionService;
+    private final MapService mapService;
 
     @GetMapping
     public String listPosts(@ModelAttribute("condition") PostSearchCondition condition, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, Model model,  @RequestParam(value = "sort", defaultValue = "createdAt") String sortType) {
@@ -63,16 +62,24 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public String postDetail(@PathVariable int id, @SessionAttribute(value = "loginMember", required = false) Object loginMember,  Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
+    public String postDetail(@PathVariable int id,
+                             @SessionAttribute(value = "loginMember", required = false) Object loginMember,
+                             Model model,
+                             @AuthenticationPrincipal CustomOAuth2User principal) {
+
         PostResponse post = postService.getPost(id);
+        Map map = mapService.findByPostId(id);
+        if (map != null) {
+            post.setMapInfo(MapRequest.mapRequest(map));
+        }
+
         List<Comment> comments = commentService.getCommentsByPostId(id);
-        model.addAttribute("comments", comments);
-        model.addAttribute("post", post);
-
         int likeCount = reactionService.getReactionCount(id, TargetType.POST, ReactionType.LIKE);
-        model.addAttribute("likeCount", likeCount);
-
         int dislikeCount = reactionService.getReactionCount(id, TargetType.POST, ReactionType.DISLIKE);
+
+        model.addAttribute("post", post);
+        model.addAttribute("comments", comments);
+        model.addAttribute("likeCount", likeCount);
         model.addAttribute("dislikeCount", dislikeCount);
 
         return "post_detail";
@@ -87,10 +94,7 @@ public class PostController {
     }
 
     @PostMapping("/write")
-    public String createPost(@ModelAttribute @Valid PostCreateRequest request,
-                             BindingResult bindingResult,
-                             @AuthenticationPrincipal CustomOAuth2User principal,
-                             Model model) {
+    public String createPost(@ModelAttribute @Valid PostCreateRequest request, BindingResult bindingResult, @AuthenticationPrincipal CustomOAuth2User principal, Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("allTags", tagService.findAllTags());
@@ -98,8 +102,9 @@ public class PostController {
         }
 
         int memberId = principal.getMember().getMemberId();
-        postService.createPost(request, memberId);
-        return "redirect:/posts";
+        int postid = postService.createPost(request, memberId);
+
+        return "redirect:/posts/" + postid;
     }
 
     @GetMapping("/edit/{id}")
