@@ -143,11 +143,9 @@
 </script>
 <script>
     function markImageForDeletion() {
-        // 이미지 숨기기
         const imageContainer = document.getElementById("image-container");
         imageContainer.style.display = "none";
 
-        // 삭제 플래그 input 추가
         const flagDiv = document.getElementById("deleteImageFlag");
         flagDiv.innerHTML = '<input type="hidden" name="deleteImage" value="on">';
     }
@@ -156,7 +154,7 @@
     function checkFileCount(input) {
         if (input.files.length > 2) {
             alert("최대 2개까지만 업로드할 수 있습니다.");
-            input.value = ''; // 선택 초기화
+            input.value = '';
         }
     }
 </script>

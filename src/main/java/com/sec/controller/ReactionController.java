@@ -1,8 +1,6 @@
 package com.sec.controller;
 
-import com.sec.dto.ReactionType;
 import com.sec.dto.TargetType;
-import com.sec.entity.Member;
 import com.sec.security.CustomOAuth2User;
 import com.sec.service.PostService;
 import com.sec.service.ReactionService;

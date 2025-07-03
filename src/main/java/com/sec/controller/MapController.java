@@ -3,7 +3,6 @@ package com.sec.controller;
 import com.sec.dto.PostResponse;
 import com.sec.dto.PostSearchCondition;
 import com.sec.entity.Map;
-import com.sec.entity.Post;
 import com.sec.service.MapService;
 import com.sec.service.PostService;
 import lombok.RequiredArgsConstructor;

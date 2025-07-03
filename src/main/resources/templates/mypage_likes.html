@@ -60,8 +60,8 @@
         <div class="col-md-2">
             <select class="form-select" name="isSolved">
                 <option th:value="null" th:selected="${condition.isSolved == null}">전체</option>
-                <option th:value="false" th:selected="${condition.isSolved == false}">미해결</option>
-                <option th:value="true" th:selected="${condition.isSolved == true}">해결됨</option>
+                <option th:value="false" th:selected="${condition.isSolved == false}">답변 대기</option>
+                <option th:value="true" th:selected="${condition.isSolved == true}">완료</option>
             </select>
         </div>
         <div class="col-md-2">
@@ -100,7 +100,7 @@
                 <td><a th:href="@{/posts/{id}(id=${post.postId})}" th:text="${post.title}">제목</a></td>
                 <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</td>
                 <td>
-                    <span th:text="${post.isSolved} ? '해결됨' : '미해결'"
+                    <span th:text="${post.isSolved} ? '완료' : '답변 대기'"
                           th:class="${post.isSolved} ? 'text-success' : 'text-secondary'"></span>
                 </td>
                 <td th:text="${post.viewCnt}">0</td>

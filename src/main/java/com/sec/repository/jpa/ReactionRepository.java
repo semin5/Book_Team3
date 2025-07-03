@@ -15,7 +15,6 @@ import java.util.Optional;
 public interface ReactionRepository extends JpaRepository<Reaction, Integer> {
     Optional<Reaction> findByMember_MemberIdAndTargetTypeAndTargetId(int memberId, TargetType targetType, int targetId);
     int countByTargetIdAndTargetTypeAndReactionType(int targetId, TargetType targetType, ReactionType reactionType);
-    List<Reaction> findByMember_MemberIdAndTargetTypeAndReactionType(int memberId, TargetType targetType, ReactionType reactionType);
     @Query("SELECT r.targetId FROM Reaction r " +
             "WHERE r.member.memberId = :memberId " +
             "AND r.targetType = 'POST' " +

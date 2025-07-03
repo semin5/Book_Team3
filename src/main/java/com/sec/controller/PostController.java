@@ -4,7 +4,6 @@ import com.sec.dto.*;
 import com.sec.entity.Comment;
 import com.sec.entity.Image;
 import com.sec.entity.Map;
-import com.sec.entity.Tag;
 import com.sec.security.CustomOAuth2User;
 import com.sec.service.*;
 import jakarta.validation.Valid;
@@ -23,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/posts")
