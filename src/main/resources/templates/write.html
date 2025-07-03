@@ -10,7 +10,8 @@
         <a class="navbar-brand fs-1" th:href="@{/posts}">📚 머물곳</a>
         <div>
             <div th:if="${currentUserId != null}">
-                <form th:action="@{/logout}" method="post">
+                <a th:href="@{/mypage}" class="btn btn-warning me-2">마이페이지</a>
+                <form th:action="@{/logout}" method="post" class="d-inline">
                     <button class="btn btn-danger">로그아웃</button>
                 </form>
             </div>

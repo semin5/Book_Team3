@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::div})}">
+<head>
+    <title>머물곳</title>
+</head>
+<body>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="d-inline me-3">마이페이지</h2>
+            <a href="/posts" class="btn btn-success">게시글로 보기</a>
+            <a href="/map" class="btn btn-success">지도로 보기</a>
+        </div>
+        <a href="/posts/write" class="btn btn-primary">글쓰기</a>
+    </div>
+    <a href="/mypage/posts" class="btn btn-warning">✍ 내가 쓴 글</a>
+    <a href="/mypage/likes" class="btn btn-warning">👍 좋아요 누른 글</a>
+
+</div>
+</body>
+</html>

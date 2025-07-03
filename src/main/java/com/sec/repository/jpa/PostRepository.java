@@ -17,5 +17,7 @@ public interface PostRepository extends JpaRepository<Post, Integer>, JpaSpecifi
     List<Post> findByContentContaining(String keyword);
     @EntityGraph(attributePaths = {"tags", "member"})
     Page<Post> findAll(Specification<Post> spec, Pageable pageable);
-
+    List<Post> findByMember_MemberId(int memberId);
+    Page<Post> findByMember_MemberId(int memberId, Pageable pageable);
+    Page<Post> findByPostIdIn(List<Integer> postIds, Pageable pageable);
 }

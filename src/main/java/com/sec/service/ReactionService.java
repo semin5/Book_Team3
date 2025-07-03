@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -55,5 +56,15 @@ public class ReactionService {
         int likes = getReactionCount(targetId, type, ReactionType.LIKE);
         int dislikes = getReactionCount(targetId, type, ReactionType.DISLIKE);
         return likes - dislikes;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Reaction> getReactionsByMemberAndType(int memberId, ReactionType type) {
+        return reactionRepository.findByMember_MemberIdAndTargetTypeAndReactionType(memberId, TargetType.POST, type);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Integer> getPostIdsReactedByMember(int memberId, ReactionType reactionType) {
+        return reactionRepository.findPostIdsReactedByMember(memberId, reactionType);
     }
 }

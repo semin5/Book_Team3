@@ -17,7 +17,8 @@
         <a class="navbar-brand fs-1" th:href="@{/posts}">📚 머물곳</a>
         <div>
             <div th:if="${currentUserId != null}">
-                <form th:action="@{/logout}" method="post">
+                <a th:href="@{/mypage}" class="btn btn-warning me-2">마이페이지</a>
+                <form th:action="@{/logout}" method="post" class="d-inline">
                     <button class="btn btn-danger">로그아웃</button>
                 </form>
             </div>
@@ -102,6 +103,11 @@
                         <div><strong>주소:</strong> ${loc.address}</div>
                         <div><strong>제목:</strong> ${loc.title}</div>
                         <div><strong>상태:</strong> ${isSolvedText}</div>
+                         ${loc.isSolved && loc.bookTitle
+                            ? `<div><strong>추천 책:</strong> ${loc.bookTitle}</div>
+                               <div><strong>저자:</strong> ${loc.bookAuthor}</div>`
+                            : ''
+                        }
                         <div class="mt-2" style="text-align: right;">
                             <a href="/posts/${loc.postId}" class="btn btn-sm btn-primary">게시글로 이동</a>
                         </div>

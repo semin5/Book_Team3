@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Builder
@@ -31,6 +32,8 @@ public @Data class PostResponse {
     private int dislikeCount;
     private int totalReactionCount;
     private MapRequest mapInfo;
+    private String bookTitle;
+    private String bookAuthor;
 
     public static PostResponse from(Post post) {
         return from(post, null);
@@ -47,6 +50,19 @@ public @Data class PostResponse {
                         .map(Tag::getTagId)
                         .collect(Collectors.toSet());
 
+        AtomicReference<String> bookTitleRef = new AtomicReference<>(null);
+        AtomicReference<String> bookAuthorRef = new AtomicReference<>(null);
+
+        if (Boolean.TRUE.equals(post.getIsSolved())) {
+            post.getComments().stream()
+                    .filter(c -> Boolean.TRUE.equals(c.getIs_selected()) && c.getBook() != null)
+                    .findFirst()
+                    .ifPresent(adopted -> {
+                        bookTitleRef.set(adopted.getBook().getTitle());
+                        bookAuthorRef.set(adopted.getBook().getAuthor());
+                    });
+        }
+
         return PostResponse.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
@@ -59,6 +75,8 @@ public @Data class PostResponse {
                 .viewCnt(post.getView_cnt())
                 .memberId(post.getMember().getMemberId())
                 .mapInfo(map != null ? MapRequest.mapRequest(map) : null)
+                .bookTitle(bookTitleRef.get())
+                .bookAuthor(bookAuthorRef.get())
                 .build();
     }
 }

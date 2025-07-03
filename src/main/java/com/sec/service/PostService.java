@@ -1,11 +1,9 @@
 package com.sec.service;
 
 import com.sec.dto.*;
-import com.sec.entity.Member;
-import com.sec.entity.Post;
-import com.sec.entity.Tag;
-import com.sec.entity.Map;
+import com.sec.entity.*;
 import com.sec.dto.MapRequest;
+import com.sec.entity.Map;
 import com.sec.repository.mongo.MapRepository;
 import com.sec.repository.jpa.MemberRepository;
 import com.sec.repository.jpa.PostRepository;
@@ -177,6 +175,166 @@ public class PostService {
 
         return result.map(post -> {
             PostResponse dto = PostResponse.from(post);
+            int like = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.LIKE);
+            int dislike = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.DISLIKE);
+            dto.setLikeCount(like);
+            dto.setDislikeCount(dislike);
+            dto.setTotalReactionCount(like - dislike);
+            return dto;
+        });
+    }
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getPostsLikedByMember(int memberId, Pageable pageable) {
+        List<Integer> likedPostIds = reactionService.getReactionsByMemberAndType(memberId, ReactionType.LIKE)
+                .stream()
+                .map(Reaction::getTargetId)
+                .toList();
+
+        return postRepository.findByPostIdIn(likedPostIds, pageable)
+                .map(post -> PostResponse.from(post, mapService.findByPostId(post.getPostId())));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getPostsWrittenByMember(int memberId, Pageable pageable) {
+        return postRepository.findByMember_MemberId(memberId, pageable)
+                .map(post -> PostResponse.from(post, mapService.findByPostId(post.getPostId())));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getPostsWrittenByMember(int memberId, PostSearchCondition condition, Pageable pageable, String sortType) {
+
+        String cleanSortType = sortType == null ? "" : sortType.trim().toLowerCase();
+        boolean isReactionSort = "like".equals(cleanSortType) || "dislike".equals(cleanSortType);
+
+        Page<Post> result = postRepository.findAll((root, query, cb) -> {
+            query.distinct(true);
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(cb.equal(root.get("member").get("memberId"), memberId));
+
+            if (condition.getKeyword() != null && !condition.getKeyword().isBlank()) {
+                Predicate title = cb.like(cb.lower(root.get("title")), "%" + condition.getKeyword().toLowerCase() + "%");
+                Predicate content = cb.like(root.get("content"), "%" + condition.getKeyword() + "%");
+                predicates.add(cb.or(title, content));
+            }
+
+            if (condition.getTag() != null && !condition.getTag().isBlank()) {
+                Join<Object, Object> tags = root.join("tags", JoinType.LEFT);
+                predicates.add(cb.equal(tags.get("name"), condition.getTag()));
+            }
+
+            if (condition.getIsSolved() != null) {
+                predicates.add(cb.equal(root.get("isSolved"), condition.getIsSolved()));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        }, isReactionSort ? Pageable.unpaged() : pageable);
+
+
+        if (isReactionSort) {
+            List<PostResponse> sorted = result.getContent().stream()
+                    .map(PostResponse::from)
+                    .peek(post -> {
+                        int like = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.LIKE);
+                        int dislike = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.DISLIKE);
+                        post.setLikeCount(like);
+                        post.setDislikeCount(dislike);
+                        post.setTotalReactionCount(like - dislike);
+                    }).collect(Collectors.toList());
+
+            if ("like".equals(cleanSortType)) {
+                sorted.sort(Comparator.comparingInt(PostResponse::getTotalReactionCount).reversed());
+            } else {
+                sorted.sort(Comparator.comparingInt(PostResponse::getTotalReactionCount));
+            }
+
+            int page = pageable.getPageNumber();
+            int size = pageable.getPageSize();
+            int start = Math.min(page * size, sorted.size());
+            int end = Math.min(start + size, sorted.size());
+            List<PostResponse> pageContent = sorted.subList(start, end);
+
+            return new PageImpl<>(pageContent, pageable, sorted.size());
+        }
+
+        return result.map(post -> {
+            PostResponse dto = PostResponse.from(post, mapService.findByPostId(post.getPostId()));
+            int like = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.LIKE);
+            int dislike = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.DISLIKE);
+            dto.setLikeCount(like);
+            dto.setDislikeCount(dislike);
+            dto.setTotalReactionCount(like - dislike);
+            return dto;
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> getPostsLikedByMember(int memberId, PostSearchCondition condition, Pageable pageable, String sortType) {
+
+        List<Integer> likedPostIds = reactionService.getPostIdsReactedByMember(memberId, ReactionType.LIKE);
+
+        if (likedPostIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        String cleanSortType = sortType == null ? "" : sortType.trim().toLowerCase();
+        boolean isReactionSort = "like".equals(cleanSortType) || "dislike".equals(cleanSortType);
+
+        Page<Post> result = postRepository.findAll((root, query, cb) -> {
+            query.distinct(true);
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(root.get("postId").in(likedPostIds));
+
+            if (condition.getKeyword() != null && !condition.getKeyword().isBlank()) {
+                Predicate title = cb.like(cb.lower(root.get("title")), "%" + condition.getKeyword().toLowerCase() + "%");
+                Predicate content = cb.like(root.get("content"), "%" + condition.getKeyword() + "%");
+                predicates.add(cb.or(title, content));
+            }
+
+            if (condition.getTag() != null && !condition.getTag().isBlank()) {
+                Join<Object, Object> tags = root.join("tags", JoinType.LEFT);
+                predicates.add(cb.equal(tags.get("name"), condition.getTag()));
+            }
+
+            if (condition.getIsSolved() != null) {
+                predicates.add(cb.equal(root.get("isSolved"), condition.getIsSolved()));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        }, isReactionSort ? Pageable.unpaged() : pageable);
+
+
+        if (isReactionSort) {
+            List<PostResponse> sorted = result.getContent().stream()
+                    .map(PostResponse::from)
+                    .peek(post -> {
+                        int like = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.LIKE);
+                        int dislike = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.DISLIKE);
+                        post.setLikeCount(like);
+                        post.setDislikeCount(dislike);
+                        post.setTotalReactionCount(like - dislike);
+                    }).collect(Collectors.toList());
+
+            if ("like".equals(cleanSortType)) {
+                sorted.sort(Comparator.comparingInt(PostResponse::getTotalReactionCount).reversed());
+            } else {
+                sorted.sort(Comparator.comparingInt(PostResponse::getTotalReactionCount));
+            }
+
+            int page = pageable.getPageNumber();
+            int size = pageable.getPageSize();
+            int start = Math.min(page * size, sorted.size());
+            int end = Math.min(start + size, sorted.size());
+            List<PostResponse> pageContent = sorted.subList(start, end);
+
+            return new PageImpl<>(pageContent, pageable, sorted.size());
+        }
+
+        return result.map(post -> {
+            PostResponse dto = PostResponse.from(post, mapService.findByPostId(post.getPostId()));
             int like = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.LIKE);
             int dislike = reactionService.getReactionCount(post.getPostId(), TargetType.POST, ReactionType.DISLIKE);
             dto.setLikeCount(like);

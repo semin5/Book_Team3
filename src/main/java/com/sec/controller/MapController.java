@@ -43,6 +43,12 @@ public class MapController {
                         location.put("title", post.getTitle());
                         location.put("isSolved", post.isSolved());
                         location.put("postId", post.getPostId());
+
+                        if (post.isSolved() && post.getBookTitle() != null) {
+                            location.put("bookTitle", post.getBookTitle());
+                            location.put("bookAuthor", post.getBookAuthor());
+                        }
+
                         return location;
                     }catch (IllegalArgumentException e) {
                             // 존재하지 않는 게시글은 무시
