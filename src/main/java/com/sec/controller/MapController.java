@@ -50,7 +50,6 @@ public class MapController {
 
                         return location;
                     }catch (IllegalArgumentException e) {
-                            // 존재하지 않는 게시글은 무시
                             return null;
                     }
                 })
