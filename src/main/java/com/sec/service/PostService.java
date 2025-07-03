@@ -344,4 +344,8 @@ public class PostService {
         });
     }
 
+    public int findPostWriterId(int postId) {
+        return postRepository.findWriterIdByPostId(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 작성자 조회 실패"));
+    }
 }

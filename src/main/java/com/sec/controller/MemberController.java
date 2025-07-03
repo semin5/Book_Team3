@@ -2,7 +2,6 @@ package com.sec.controller;
 
 import com.sec.dto.PostResponse;
 import com.sec.dto.PostSearchCondition;
-import com.sec.dto.ReactionType;
 import com.sec.entity.Member;
 import com.sec.repository.jpa.MemberRepository;
 import com.sec.security.CustomOAuth2User;
@@ -18,8 +17,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/mypage")
@@ -44,7 +41,6 @@ public class MemberController {
         model.addAttribute("commentCount", commentCount);
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("dislikeCount", dislikeCount);
-
         return "mypage";
     }
 
