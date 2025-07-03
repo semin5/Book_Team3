@@ -2,6 +2,9 @@ package com.sec.controller;
 
 import com.sec.dto.PostResponse;
 import com.sec.dto.PostSearchCondition;
+import com.sec.dto.ReactionType;
+import com.sec.entity.Member;
+import com.sec.repository.jpa.MemberRepository;
 import com.sec.security.CustomOAuth2User;
 import com.sec.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +27,23 @@ import java.util.List;
 public class MemberController {
 
     private final PostService postService;
+    private final MemberRepository memberRepository;
 
     @GetMapping
     public String myPages(Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
+        Member member = principal.getMember();
+        int memberId = member.getMemberId();
+
+        long postCount = memberRepository.countPostsByMemberId(memberId);
+        long commentCount = memberRepository.countCommentsByMemberId(memberId);
+        long likeCount = memberRepository.countLikesByMemberId(memberId);
+        long dislikeCount = memberRepository.countDislikesByMemberId(memberId);
+
+        model.addAttribute("member", member);
+        model.addAttribute("postCount", postCount);
+        model.addAttribute("commentCount", commentCount);
+        model.addAttribute("likeCount", likeCount);
+        model.addAttribute("dislikeCount", dislikeCount);
 
         return "mypage";
     }
