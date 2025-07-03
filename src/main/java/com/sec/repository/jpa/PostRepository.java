@@ -16,11 +16,8 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer>, JpaSpecificationExecutor<Post> {
-    List<Post> findByTagsNameContaining(String tagName);
-    List<Post> findByContentContaining(String keyword);
     @EntityGraph(attributePaths = {"tags", "member"})
     Page<Post> findAll(Specification<Post> spec, Pageable pageable);
-    List<Post> findByMember_MemberId(int memberId);
     Page<Post> findByMember_MemberId(int memberId, Pageable pageable);
     Page<Post> findByPostIdIn(List<Integer> postIds, Pageable pageable);
     @Query("SELECT p.member.memberId FROM Post p WHERE p.postId = :postId")

@@ -1,6 +1,5 @@
 package com.sec.service;
 
-import com.sec.dto.Notification;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -17,7 +16,7 @@ public class SseService {
     private final Map<Integer, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter connect(int memberId) {
-        SseEmitter emitter = new SseEmitter(60 * 1000L);
+        SseEmitter emitter = new SseEmitter(0L);
         emitters.put(memberId, emitter);
 
         emitter.onCompletion(() -> emitters.remove(memberId));

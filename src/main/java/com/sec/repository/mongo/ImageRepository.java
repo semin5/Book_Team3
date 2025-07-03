@@ -6,10 +6,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface ImageRepository extends MongoRepository<Image, String> {
-
     List<Image> findByPostId(Integer postId);
-
-    List<Image> findByPostIdIsNull();
-
-    void deleteByPostId(Integer postId);
 }

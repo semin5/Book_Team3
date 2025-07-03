@@ -183,22 +183,6 @@ public class PostService {
             return dto;
         });
     }
-    @Transactional(readOnly = true)
-    public Page<PostResponse> getPostsLikedByMember(int memberId, Pageable pageable) {
-        List<Integer> likedPostIds = reactionService.getReactionsByMemberAndType(memberId, ReactionType.LIKE)
-                .stream()
-                .map(Reaction::getTargetId)
-                .toList();
-
-        return postRepository.findByPostIdIn(likedPostIds, pageable)
-                .map(post -> PostResponse.from(post, mapService.findByPostId(post.getPostId())));
-    }
-
-    @Transactional(readOnly = true)
-    public Page<PostResponse> getPostsWrittenByMember(int memberId, Pageable pageable) {
-        return postRepository.findByMember_MemberId(memberId, pageable)
-                .map(post -> PostResponse.from(post, mapService.findByPostId(post.getPostId())));
-    }
 
     @Transactional(readOnly = true)
     public Page<PostResponse> getPostsWrittenByMember(int memberId, PostSearchCondition condition, Pageable pageable, String sortType) {

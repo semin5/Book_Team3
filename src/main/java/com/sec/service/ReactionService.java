@@ -16,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReactionService {
 
-    private final MemberRepository memberRepository;
     private final ReactionRepository reactionRepository;
     private final MemberService memberService;
 
@@ -56,11 +55,6 @@ public class ReactionService {
         int likes = getReactionCount(targetId, type, ReactionType.LIKE);
         int dislikes = getReactionCount(targetId, type, ReactionType.DISLIKE);
         return likes - dislikes;
-    }
-
-    @Transactional(readOnly = true)
-    public List<Reaction> getReactionsByMemberAndType(int memberId, ReactionType type) {
-        return reactionRepository.findByMember_MemberIdAndTargetTypeAndReactionType(memberId, TargetType.POST, type);
     }
 
     @Transactional(readOnly = true)

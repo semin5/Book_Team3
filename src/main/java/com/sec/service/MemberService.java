@@ -17,16 +17,4 @@ public class MemberService {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. id=" + id));
     }
-
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
-    }
-
-    public Member save(Member member) {
-        return memberRepository.save(member);
-    }
-
-    public void deleteById(int id) {
-        memberRepository.deleteById(id);
-    }
 }

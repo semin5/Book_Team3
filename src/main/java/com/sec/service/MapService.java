@@ -5,17 +5,12 @@ import com.sec.repository.mongo.MapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class MapService {
 
     private final MapRepository mapRepository;
 
-    public List<Map> findAll() {
-        return mapRepository.findAll();
-    }
     public Map findByPostId(int postId) {
         return mapRepository.findByPostId(postId);
     }

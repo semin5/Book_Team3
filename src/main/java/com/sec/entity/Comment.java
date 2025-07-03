@@ -2,6 +2,7 @@ package com.sec.entity;
 
 import java.time.LocalDateTime;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

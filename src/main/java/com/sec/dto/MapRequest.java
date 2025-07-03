@@ -26,14 +26,4 @@ public @Data class MapRequest {
                 .longitude(map.getLongitude())
                 .build();
     }
-
-    public Map toDocument(int postId) {
-        return Map.builder()
-                .postId(postId)
-                .address(this.address)
-                .latitude(this.latitude)
-                .longitude(this.longitude)
-                .build();
-    }
-
 }
