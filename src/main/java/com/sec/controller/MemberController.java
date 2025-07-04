@@ -52,6 +52,7 @@ public class MemberController {
         condition.setIsSolved(isSolved);
         condition.setTag(tag);
 
+
         Pageable myPostPageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
         Page<PostResponse> myPosts = postService.getPostsWrittenByMember(memberId, condition, myPostPageable, sort);
 

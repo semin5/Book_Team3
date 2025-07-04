@@ -22,16 +22,96 @@
 
     <h4>👍 좋아요 누른 글</h4>
 
-    <div th:replace="~{fragments/filter :: filter('/mypage/likes', ${condition}, ${sort})}"></div>
+    <form method="get" th:action="@{/mypage/likes}" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="keyword" th:value="${condition.keyword}"
+                   class="form-control" placeholder="본문 + 내용">
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="tag">
+                <option th:value="null" th:selected="${condition.tag == null}">전체</option>
+                <option th:value="'#조용한'" th:selected="${condition.tag == '#조용한'}">#조용한</option>
+                <option th:value="'#고요한'" th:selected="${condition.tag == '#고요한'}">#고요한</option>
+                <option th:value="'#집중되는'" th:selected="${condition.tag == '#집중되는'}">#집중되는</option>
+                <option th:value="'#공부방'" th:selected="${condition.tag == '#공부방'}">#공부방</option>
+                <option th:value="'#추천'" th:selected="${condition.tag == '#추천'}">#추천</option>
+                <option th:value="'#비추천'" th:selected="${condition.tag == '#비추천'}">#비추천</option>
+                <option th:value="'#시끄러운'" th:selected="${condition.tag == '#시끄러운'}">#시끄러운</option>
+                <option th:value="'#정신없는'" th:selected="${condition.tag == '#정신없는'}">#정신없는</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select class="form-select" name="isSolved">
+                <option th:value="null" th:selected="${condition.isSolved == null}">전체</option>
+                <option th:value="false" th:selected="${condition.isSolved == false}">답변 대기</option>
+                <option th:value="true" th:selected="${condition.isSolved == true}">완료</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="sort">
+                <option value="createdAt" th:selected="${sort == 'createdAt'}">최신순</option>
+                <option value="like" th:selected="${sort == 'like'}">좋아요순</option>
+                <option value="dislike" th:selected="${sort == 'dislike'}">싫어요순</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-secondary w-100" type="submit">검색</button>
+        </div>
+    </form>
+
 
     <div th:if="${likedPosts.isEmpty()}">
         <p class="text-center mt-5">✍️ 작성한 글이 없습니다.</p>
     </div>
 
     <div th:if="${!likedPosts.isEmpty()}">
-        <div th:replace="~{fragments/mypage_table :: mypage_table(${likedPosts})}"></div>
+        <table class="table table-bordered bg-white">
+            <thead class="table-light">
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성일</th>
+                <th>상태</th>
+                <th>조회수</th>
+                <th>추천</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="post : ${likedPosts.content}">
+                <td th:text="${post.postId}">1</td>
+                <td><a th:href="@{/posts/{id}(id=${post.postId})}" th:text="${post.title}">제목</a></td>
+                <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</td>
+                <td>
+                    <span th:text="${post.isSolved} ? '완료' : '답변 대기'"
+                          th:class="${post.isSolved} ? 'text-success' : 'text-secondary'"></span>
+                </td>
+                <td th:text="${post.viewCnt}">0</td>
+                <td th:text="${post.totalReactionCount}">0</td>
+            </tr>
+            </tbody>
+        </table>
 
-        <div th:replace="fragments/pagination :: pagination(${likedPosts}, '/mypage/likes', ${condition}, ${sort})"></div>
+    <nav th:if="${likedPosts.totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${likedPosts.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/mypage/likes(page=0, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">처음</a>
+            </li>
+            <li class="page-item" th:classappend="${!likedPosts.hasPrevious()} ? 'disabled'">
+                <a class="page-link" th:href="@{/mypage/likes(page=${likedPosts.number - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">이전</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" th:text="${likedPosts.number + 1} + ' / ' + ${likedPosts.totalPages}">페이지 정보</a>
+            </li>
+            <li class="page-item" th:classappend="${!likedPosts.hasNext()} ? 'disabled'">
+                <a class="page-link" th:href="@{/mypage/likes(page=${likedPosts.number + 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">다음</a>
+            </li>
+            <li class="page-item" th:classappend="${likedPosts.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/mypage/likes(page=${likedPosts.totalPages - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">끝</a>
+            </li>
+        </ul>
+    </nav>
 </div>
 </div>
 <script th:src="@{/js/notification.js}"></script>
