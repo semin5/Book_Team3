@@ -8,23 +8,7 @@
 <script th:inline="javascript">
     const memberId = [[${currentUserId}]];
 </script>
-<div class="container">
-    <div id="notification-box" class="my-3"></div>
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand fs-1" th:href="@{/posts}">📚 머물곳</a>
-        <div>
-            <div th:if="${currentUserId != null}">
-                <a th:href="@{/mypage}" class="btn btn-warning me-2">마이페이지</a>
-                <form th:action="@{/logout}" method="post" class="d-inline">
-                    <button class="btn btn-danger">로그아웃</button>
-                </form>
-            </div>
-            <div th:if="${currentUserId == null}">
-                <a th:href="@{/oauth2/authorization/google}" class="btn btn-primary">로그인</a>
-            </div>
-        </div>
-    </nav>
-</div>
+<div th:replace="~{fragments/navbar :: navbar-fragment}"></div>
 <div class="container">
     <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
         <span th:text="${errorMessage}">오류 메시지</span>
@@ -191,61 +175,8 @@
 
     <br class="mt-3">
 </div>
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=&autoload=false&libraries=services"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        kakao.maps.load(function () {
-            let lat = parseFloat(document.getElementById('latitude').value);
-            let lng = parseFloat(document.getElementById('longitude').value);
-
-            if (!isNaN(lat) && !isNaN(lng)) {
-                let mapContainer = document.getElementById('map');
-                let mapOption = {
-                    center: new kakao.maps.LatLng(lat, lng),
-                    level: 3
-                };
-                let map = new kakao.maps.Map(mapContainer, mapOption);
-
-                new kakao.maps.Marker({
-                    map: map,
-                    position: new kakao.maps.LatLng(lat, lng)
-                });
-            } else {
-                document.getElementById('map').innerHTML = "<p class='text-danger'>등록된 위치 정보가 없습니다.</p>";
-            }
-        });
-    });
-</script>
-<script>
-    if (typeof memberId !== 'undefined') {
-        const eventSource = new EventSource(`/notifications/connect?memberId=${memberId}`);
-
-        eventSource.onopen = function () {
-            console.log("✅ SSE 연결 성공");
-        };
-
-        eventSource.addEventListener("notification", function (event) {
-            const notification = JSON.parse(event.data);
-            console.log("🔔 새 알림:", notification);
-
-            const box = document.getElementById("notification-box");
-            const item = document.createElement("div");
-            item.className = "alert alert-info";
-
-            const link = document.createElement("a");
-            link.href = `/posts/${notification.postId}`;
-            link.className = "text-decoration-none text-dark";
-            link.innerText = `[알림] ${notification.content}`;
-
-            item.appendChild(link);
-            box.prepend(item);
-        });
-
-        eventSource.onerror = function (err) {
-            console.error("❌ SSE 연결 오류", err);
-            eventSource.close();
-        };
-    }
-</script>
+<div th:replace="~{fragments/kakao :: appkey}"></div>
+<script th:src="@{/js/post_detail_map.js}"></script>
+<script th:src="@{/js/notification.js}"></script>
 </body>
 </html>

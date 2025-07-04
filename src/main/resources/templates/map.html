@@ -3,7 +3,7 @@
 <head>
     <title>머물곳</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=&autoload=false"></script>
+    <div th:replace="~{fragments/kakao :: appkey}"></div>
     <style>
         #map {
             width: 100%;
@@ -15,23 +15,7 @@
 <script th:inline="javascript">
     const memberId = [[${currentUserId}]];
 </script>
-<div class="container">
-    <div id="notification-box" class="my-3"></div>
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand fs-1" th:href="@{/posts}">📚 머물곳</a>
-        <div>
-            <div th:if="${currentUserId != null}">
-                <a th:href="@{/mypage}" class="btn btn-warning me-2">마이페이지</a>
-                <form th:action="@{/logout}" method="post" class="d-inline">
-                    <button class="btn btn-danger">로그아웃</button>
-                </form>
-            </div>
-            <div th:if="${currentUserId == null}">
-                <a th:href="@{/oauth2/authorization/google}" class="btn btn-primary">로그인</a>
-            </div>
-        </div>
-    </nav>
-</div>
+<div th:replace="~{fragments/navbar :: navbar-fragment}"></div>
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
@@ -81,95 +65,7 @@
     const locations = [[${locations}]];
     /*]]>*/
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        kakao.maps.load(function () {
-            const container = document.getElementById('map');
-            const options = {
-                center: new kakao.maps.LatLng(36.5, 127.5),
-                level: 13
-            };
-            const map = new kakao.maps.Map(container, options);
-
-            const infowindows = [];
-
-            locations.forEach(loc => {
-                const position = new kakao.maps.LatLng(loc.latitude, loc.longitude);
-                const marker = new kakao.maps.Marker({
-                    map: map,
-                    position: position
-                });
-
-                const isSolvedText = loc.isSolved ? "✅ 완료" : "❓ 답변 대기";
-
-                const content = `
-                    <div style="padding: 10px; min-width: 250px; width: max-content; font-size: 14px; font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.5; white-space: nowrap;">
-                        <div><strong>주소:</strong> ${loc.address}</div>
-                        <div><strong>제목:</strong> ${loc.title}</div>
-                        <div><strong>상태:</strong> ${isSolvedText}</div>
-                         ${loc.isSolved && loc.bookTitle
-                            ? `<div><strong>추천 책:</strong> ${loc.bookTitle}</div>
-                               <div><strong>저자:</strong> ${loc.bookAuthor}</div>`
-                            : ''
-                        }
-                        <div class="mt-2" style="text-align: right;">
-                            <a href="/posts/${loc.postId}" class="btn btn-sm btn-primary">게시글로 이동</a>
-                        </div>
-                    </div>
-                `;
-
-                const infowindow = new kakao.maps.InfoWindow({
-                    content: content,
-                    disableAutoPan: true
-                });
-                infowindows.push(infowindow);
-
-                let isOpen = false;
-
-                kakao.maps.event.addListener(marker, 'click', function () {
-                    if (isOpen) {
-                        infowindow.close();
-                        isOpen = false;
-                    } else {
-                        infowindows.forEach(iw => iw.close());
-                        infowindow.open(map, marker);
-                        isOpen = true;
-                    }
-                });
-            });
-        });
-    });
-</script>
-<script>
-    if (typeof memberId !== 'undefined') {
-        const eventSource = new EventSource(`/notifications/connect?memberId=${memberId}`);
-
-        eventSource.onopen = function () {
-            console.log("✅ SSE 연결 성공");
-        };
-
-        eventSource.addEventListener("notification", function (event) {
-            const notification = JSON.parse(event.data);
-            console.log("🔔 새 알림:", notification);
-
-            const box = document.getElementById("notification-box");
-            const item = document.createElement("div");
-            item.className = "alert alert-info";
-
-            const link = document.createElement("a");
-            link.href = `/posts/${notification.postId}`;
-            link.className = "text-decoration-none text-dark";
-            link.innerText = `[알림] ${notification.content}`;
-
-            item.appendChild(link);
-            box.prepend(item);
-        });
-
-        eventSource.onerror = function (err) {
-            console.error("❌ SSE 연결 오류", err);
-            eventSource.close();
-        };
-    }
-</script>
+<script th:src="@{/js/map.js}"></script>
+<script th:src="@{/js/notification.js}"></script>
 </body>
 </html>

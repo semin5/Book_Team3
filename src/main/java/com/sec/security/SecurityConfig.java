@@ -19,7 +19,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/posts/**", "/css/**", "/images/**", "/login", "/notifications/**").permitAll()
+                        .requestMatchers("/", "/css/**", "/images/**", "/login", "/notifications/**").permitAll()
+                        .requestMatchers("/posts/**", "/map/**", "/mypage/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth

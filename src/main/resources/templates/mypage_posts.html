@@ -8,23 +8,7 @@
 <script th:inline="javascript">
     const memberId = [[${currentUserId}]];
 </script>
-<div class="container">
-    <div id="notification-box" class="my-3"></div>
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand fs-1" th:href="@{/posts}">📚 머물곳</a>
-        <div>
-            <div th:if="${currentUserId != null}">
-                <a th:href="@{/mypage}" class="btn btn-warning me-2">마이페이지</a>
-                <form th:action="@{/logout}" method="post" class="d-inline">
-                    <button class="btn btn-danger">로그아웃</button>
-                </form>
-            </div>
-            <div th:if="${currentUserId == null}">
-                <a th:href="@{/oauth2/authorization/google}" class="btn btn-primary">로그인</a>
-            </div>
-        </div>
-    </nav>
-</div>
+<div th:replace="~{fragments/navbar :: navbar-fragment}"></div>
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
@@ -38,128 +22,18 @@
 
     <h4>✍️ 내가 쓴 글</h4>
 
-    <form method="get" th:action="@{/mypage/posts}" class="row g-2 mb-4">
-        <div class="col-md-4">
-            <input type="text" name="keyword" th:value="${condition.keyword}"
-                   class="form-control" placeholder="본문 + 내용">
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" name="tag">
-                <option th:value="null" th:selected="${condition.tag == null}">전체</option>
-                <option th:value="'#조용한'" th:selected="${condition.tag == '#조용한'}">#조용한</option>
-                <option th:value="'#고요한'" th:selected="${condition.tag == '#고요한'}">#고요한</option>
-                <option th:value="'#집중되는'" th:selected="${condition.tag == '#집중되는'}">#집중되는</option>
-                <option th:value="'#공부방'" th:selected="${condition.tag == '#공부방'}">#공부방</option>
-                <option th:value="'#추천'" th:selected="${condition.tag == '#추천'}">#추천</option>
-                <option th:value="'#비추천'" th:selected="${condition.tag == '#비추천'}">#비추천</option>
-                <option th:value="'#시끄러운'" th:selected="${condition.tag == '#시끄러운'}">#시끄러운</option>
-                <option th:value="'#정신없는'" th:selected="${condition.tag == '#정신없는'}">#정신없는</option>
-            </select>
-        </div>
-
-        <div class="col-md-2">
-            <select class="form-select" name="isSolved">
-                <option th:value="null" th:selected="${condition.isSolved == null}">전체</option>
-                <option th:value="false" th:selected="${condition.isSolved == false}">답변 대기</option>
-                <option th:value="true" th:selected="${condition.isSolved == true}">완료</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" name="sort">
-                <option value="createdAt" th:selected="${sort == 'createdAt'}">최신순</option>
-                <option value="like" th:selected="${sort == 'like'}">좋아요순</option>
-                <option value="dislike" th:selected="${sort == 'dislike'}">싫어요순</option>
-            </select>
-        </div>
-
-        <div class="col-md-2">
-            <button class="btn btn-secondary w-100" type="submit">검색</button>
-        </div>
-    </form>
-
+    <div th:replace="~{fragments/filter :: filter('/mypage/posts', ${condition}, ${sort})}"></div>
 
     <div th:if="${myPosts.isEmpty()}">
         <p class="text-center mt-5">✍️ 작성한 글이 없습니다.</p>
     </div>
 
     <div th:if="${!myPosts.isEmpty()}">
-        <table class="table table-bordered bg-white">
-            <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>제목</th>
-                <th>작성일</th>
-                <th>상태</th>
-                <th>조회수</th>
-                <th>추천</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="post : ${myPosts.content}">
-                <td th:text="${post.postId}">1</td>
-                <td><a th:href="@{/posts/{id}(id=${post.postId})}" th:text="${post.title}">제목</a></td>
-                <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</td>
-                <td>
-                    <span th:text="${post.isSolved} ? '완료' : '답변 대기'"
-                          th:class="${post.isSolved} ? 'text-success' : 'text-secondary'"></span>
-                </td>
-                <td th:text="${post.viewCnt}">0</td>
-                <td th:text="${post.totalReactionCount}">0</td>
-            </tr>
-            </tbody>
-        </table>
+        <div th:replace="~{fragments/mypage_table :: mypage_table(${myPosts})}"></div>
 
-    <nav th:if="${myPosts.totalPages > 1}">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${myPosts.first} ? 'disabled'">
-                <a class="page-link" th:href="@{/mypage/posts(myPage=0)}">처음</a>
-            </li>
-            <li class="page-item" th:classappend="${!myPosts.hasPrevious()} ? 'disabled'">
-                <a class="page-link" th:href="@{/mypage/posts(myPage=${myPosts.number - 1})}">이전</a>
-            </li>
-            <li class="page-item disabled">
-                <a class="page-link" th:text="${myPosts.number + 1} + ' / ' + ${myPosts.totalPages}">페이지 정보</a>
-            </li>
-            <li class="page-item" th:classappend="${!myPosts.hasNext()} ? 'disabled'">
-                <a class="page-link" th:href="@{/mypage/posts(myPage=${myPosts.number + 1})}">다음</a>
-            </li>
-            <li class="page-item" th:classappend="${myPosts.last} ? 'disabled'">
-                <a class="page-link" th:href="@{/mypage/posts(myPage=${myPosts.totalPages - 1})}">끝</a>
-            </li>
-        </ul>
-    </nav>
+        <div th:replace="fragments/pagination :: pagination(${myPosts}, '/mypage/posts', ${condition}, ${sort})"></div>
+    </div>
 </div>
-</div>
-<script>
-    if (typeof memberId !== 'undefined') {
-        const eventSource = new EventSource(`/notifications/connect?memberId=${memberId}`);
-
-        eventSource.onopen = function () {
-            console.log("✅ SSE 연결 성공");
-        };
-
-        eventSource.addEventListener("notification", function (event) {
-            const notification = JSON.parse(event.data);
-            console.log("🔔 새 알림:", notification);
-
-            const box = document.getElementById("notification-box");
-            const item = document.createElement("div");
-            item.className = "alert alert-info";
-
-            const link = document.createElement("a");
-            link.href = `/posts/${notification.postId}`;
-            link.className = "text-decoration-none text-dark";
-            link.innerText = `[알림] ${notification.content}`;
-
-            item.appendChild(link);
-            box.prepend(item);
-        });
-
-        eventSource.onerror = function (err) {
-            console.error("❌ SSE 연결 오류", err);
-            eventSource.close();
-        };
-    }
-</script>
+<script th:src="@{/js/notification.js}"></script>
 </body>
 </html>

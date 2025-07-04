@@ -45,14 +45,14 @@ public class MemberController {
     }
 
     @GetMapping("/posts")
-    public String myWrittenPosts(Model model, @AuthenticationPrincipal CustomOAuth2User principal, @RequestParam(defaultValue = "0") int myPage, @RequestParam(required = false) String keyword, @RequestParam(required = false) Boolean isSolved, @RequestParam(required = false, defaultValue = "createdAt") String sort, @RequestParam(required = false) String tag) {
+    public String myWrittenPosts(Model model, @AuthenticationPrincipal CustomOAuth2User principal, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword, @RequestParam(required = false) Boolean isSolved, @RequestParam(required = false, defaultValue = "createdAt") String sort, @RequestParam(required = false) String tag) {
         int memberId = principal.getMember().getMemberId();
         PostSearchCondition condition = new PostSearchCondition();
         condition.setKeyword(keyword);
         condition.setIsSolved(isSolved);
         condition.setTag(tag);
 
-        Pageable myPostPageable = PageRequest.of(myPage, 10, Sort.by("createdAt").descending());
+        Pageable myPostPageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
         Page<PostResponse> myPosts = postService.getPostsWrittenByMember(memberId, condition, myPostPageable, sort);
 
         model.addAttribute("myPosts", myPosts);
@@ -62,14 +62,14 @@ public class MemberController {
     }
 
     @GetMapping("/likes")
-    public String myLikedPosts(Model model, @AuthenticationPrincipal CustomOAuth2User principal, @RequestParam(defaultValue = "0") int myPage, @RequestParam(required = false) String keyword, @RequestParam(required = false) Boolean isSolved, @RequestParam(required = false, defaultValue = "createdAt") String sort, @RequestParam(required = false) String tag) {
+    public String myLikedPosts(Model model, @AuthenticationPrincipal CustomOAuth2User principal, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword, @RequestParam(required = false) Boolean isSolved, @RequestParam(required = false, defaultValue = "createdAt") String sort, @RequestParam(required = false) String tag) {
         int memberId = principal.getMember().getMemberId();
         PostSearchCondition condition = new PostSearchCondition();
         condition.setKeyword(keyword);
         condition.setIsSolved(isSolved);
         condition.setTag(tag);
 
-        Pageable likedPageable = PageRequest.of(myPage, 10, Sort.by("createdAt").descending());
+        Pageable likedPageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
         Page<PostResponse> likedPosts = postService.getPostsLikedByMember(memberId, condition, likedPageable, sort);
 
         model.addAttribute("likedPosts", likedPosts);

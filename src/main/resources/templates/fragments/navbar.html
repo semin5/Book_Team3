@@ -1,0 +1,17 @@
+<div th:fragment="navbar-fragment" class="container">
+    <div id="notification-box" class="my-3"></div>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand fs-1" th:href="@{/posts}">📚 머물곳</a>
+        <div>
+            <div th:if="${currentUserId != null}">
+                <a th:href="@{/mypage}" class="btn btn-warning me-2">마이페이지</a>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button class="btn btn-danger">로그아웃</button>
+                </form>
+            </div>
+            <div th:if="${currentUserId == null}">
+                <a th:href="@{/oauth2/authorization/google}" class="btn btn-primary">로그인</a>
+            </div>
+        </div>
+    </nav>
+</div>

@@ -1,0 +1,19 @@
+<nav th:fragment="pagination(pageData, url, condition, sort)" th:if="${pageData.totalPages > 1}">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${pageData.first} ? 'disabled'">
+            <a class="page-link" th:href="|${url}?page=0&keyword=${condition.keyword ?: ''}&tag=${condition.tag ?: ''}&isSolved=${condition.isSolved ?: ''}&sort=${sort}|">처음</a>
+        </li>
+        <li class="page-item" th:classappend="${!pageData.hasPrevious()} ? 'disabled'">
+            <a class="page-link" th:href="|${url}?page=${pageData.number - 1}&keyword=${condition.keyword ?: ''}&tag=${condition.tag ?: ''}&isSolved=${condition.isSolved ?: ''}&sort=${sort}|">이전</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" th:text="${pageData.number + 1} + ' / ' + ${pageData.totalPages}">페이지 정보</a>
+        </li>
+        <li class="page-item" th:classappend="${!pageData.hasNext()} ? 'disabled'">
+            <a class="page-link" th:href="|${url}?page=${pageData.number + 1}&keyword=${condition.keyword ?: ''}&tag=${condition.tag ?: ''}&isSolved=${condition.isSolved ?: ''}&sort=${sort}|">다음</a>
+        </li>
+        <li class="page-item" th:classappend="${pageData.last} ? 'disabled'">
+            <a class="page-link" th:href="|${url}?page=${pageData.totalPages - 1}&keyword=${condition.keyword ?: ''}&tag=${condition.tag ?: ''}&isSolved=${condition.isSolved ?: ''}&sort=${sort}|">끝</a>
+        </li>
+    </ul>
+</nav>

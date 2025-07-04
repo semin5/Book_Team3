@@ -1,0 +1,25 @@
+<table class="table table-bordered bg-white" th:fragment="mypage_table(postList)">
+    <thead class="table-light">
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성일</th>
+        <th>상태</th>
+        <th>조회수</th>
+        <th>추천</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${postList.content}">
+        <td th:text="${post.postId}">1</td>
+        <td><a th:href="@{/posts/{id}(id=${post.postId})}" th:text="${post.title}">제목</a></td>
+        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</td>
+        <td>
+            <span th:text="${post.isSolved} ? '완료' : '답변 대기'"
+                  th:class="${post.isSolved} ? 'text-success' : 'text-secondary'"></span>
+        </td>
+        <td th:text="${post.viewCnt}">0</td>
+        <td th:text="${post.totalReactionCount}">0</td>
+    </tr>
+    </tbody>
+</table>

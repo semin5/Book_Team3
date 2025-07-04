@@ -8,23 +8,7 @@
 <script th:inline="javascript">
     const memberId = [[${currentUserId}]];
 </script>
-<div class="container">
-    <div id="notification-box" class="my-3"></div>
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand fs-1" th:href="@{/posts}">📚 머물곳</a>
-        <div>
-            <div th:if="${currentUserId != null}">
-                <a th:href="@{/mypage}" class="btn btn-warning me-2">마이페이지</a>
-                <form th:action="@{/logout}" method="post" class="d-inline">
-                    <button class="btn btn-danger">로그아웃</button>
-                </form>
-            </div>
-            <div th:if="${currentUserId == null}">
-                <a th:href="@{/oauth2/authorization/google}" class="btn btn-primary">로그인</a>
-            </div>
-        </div>
-    </nav>
-</div>
+<div th:replace="~{fragments/navbar :: navbar-fragment}"></div>
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
@@ -76,7 +60,7 @@
     <table class="table table-bordered bg-white">
         <thead class="table-light">
         <tr>
-            <th>#</th>
+            <th>번호</th>
             <th>제목</th>
             <th>작성자</th>
             <th>작성일</th>
@@ -120,37 +104,7 @@
         </ul>
     </nav>
 </div>
-<script>
-    if (typeof memberId !== 'undefined') {
-        const eventSource = new EventSource(`/notifications/connect?memberId=${memberId}`);
-
-        eventSource.onopen = function () {
-            console.log("✅ SSE 연결 성공");
-        };
-
-        eventSource.addEventListener("notification", function (event) {
-            const notification = JSON.parse(event.data);
-            console.log("🔔 새 알림:", notification);
-
-            const box = document.getElementById("notification-box");
-            const item = document.createElement("div");
-            item.className = "alert alert-info";
-
-            const link = document.createElement("a");
-            link.href = `/posts/${notification.postId}`;
-            link.className = "text-decoration-none text-dark";
-            link.innerText = `[알림] ${notification.content}`;
-
-            item.appendChild(link);
-            box.prepend(item);
-        });
-
-        eventSource.onerror = function (err) {
-            console.error("❌ SSE 연결 오류", err);
-            eventSource.close();
-        };
-    }
-</script>
+<script th:src="@{/js/notification.js}"></script>
 </body>
 </html>
 
