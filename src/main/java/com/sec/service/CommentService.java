@@ -24,6 +24,7 @@ public class CommentService {
     private final BookRepository bookRepository;
 
     public void createComment(CommentDto dto) {
+
         if (dto.getPostId() == null || dto.getMemberId() == null) {
             throw new IllegalArgumentException("postId 또는 memberId가 null입니다.");
         }
@@ -59,11 +60,13 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<Comment> getCommentsByPostId(Integer postId) {
+
         return commentRepository.findByPost_PostId(postId);
     }
 
     @Transactional
     public void deleteComment(Integer commentId) {
+
         commentRepository.deleteById(commentId);
     }
 

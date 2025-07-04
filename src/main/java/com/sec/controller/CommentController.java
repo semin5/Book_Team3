@@ -22,6 +22,7 @@ public class CommentController {
     @PostMapping
     public String createComment(@ModelAttribute CommentDto commentDto,
                                 @AuthenticationPrincipal CustomOAuth2User principal) {
+
         if (principal == null) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
@@ -41,10 +42,12 @@ public class CommentController {
     @PostMapping("/{id}/delete")
     public String deleteComment(@PathVariable Integer id,
                                 @RequestParam Integer postId) {
+
         if (postId == null) {
             return "redirect:/posts";
         }
         commentService.deleteComment(id);
+
         return "redirect:/posts/" + postId;
     }
 
@@ -55,15 +58,19 @@ public class CommentController {
                                 @RequestParam String bookTitle,
                                 @RequestParam String bookAuthor,
                                 @RequestParam(required = false) Integer bookId) {
+
         if (content == null || content.trim().isEmpty()) {
             return "redirect:/posts/" + postId + "?error=댓글 내용은 비어 있을 수 없습니다";
         }
         commentService.updateComment(id, content, bookTitle, bookAuthor, bookId);
+
         return "redirect:/posts/" + postId;
     }
     @PostMapping("/{commentId}/adopt")
     public String adoptComment(@PathVariable int commentId, @RequestParam int postId) {
+
         commentService.adoptComment(commentId, postId);
+
         return "redirect:/posts/" + postId;
     }
 

@@ -29,6 +29,7 @@ public class MapController {
     public String showMap(@ModelAttribute("condition") PostSearchCondition condition,
                           @RequestParam(value = "sort", defaultValue = "createdAt") String sortType,
                           Model model) {
+
         List<PostResponse> postList = postService.getPostsByCondition(condition, Pageable.unpaged(), sortType).getContent();
 
         List<java.util.Map<String, Object>> locations = postList.stream()
@@ -60,6 +61,7 @@ public class MapController {
 
         model.addAttribute("condition", condition);
         model.addAttribute("locations", locations);
+
         return "map";
     }
 }

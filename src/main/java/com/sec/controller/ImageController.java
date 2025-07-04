@@ -19,6 +19,7 @@ public class ImageController {
 
     @GetMapping("/images/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable String id) throws IOException {
+
         InputStream in = imageService.getImageStream(id);
         if (in == null) {
             return ResponseEntity.notFound().build();
@@ -29,12 +30,14 @@ public class ImageController {
         byte[] bytes = in.readAllBytes();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(image.getContentType()));
+
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
 
     @PostMapping("/images/delete/{id}")
     public String deleteImage(@PathVariable String id,
                               @RequestHeader("referer") String referer) {
+
         Image image = imageService.getImageMetadata(id);
         if (image != null) {
             imageService.deleteImagesByPostId(image.getPostId());

@@ -37,6 +37,7 @@ public @Data class PostResponse {
     private String bookAuthor;
 
     public static PostResponse from(Post post) {
+
         return from(post, null);
     }
 

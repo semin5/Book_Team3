@@ -23,6 +23,7 @@ public @Data class MapRequest {
     private String address;
 
     public static MapRequest mapRequest(Map map) {
+
         return MapRequest.builder()
                 .address(map.getAddress())
                 .latitude(map.getLatitude())

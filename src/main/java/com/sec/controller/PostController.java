@@ -113,6 +113,7 @@ public class PostController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("allTags", tagService.findAllTags());
+
             return "write";
         }
 

@@ -17,24 +17,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/css/**", "/images/**", "/login", "/notifications/**").permitAll()
-                        .requestMatchers("/posts/**", "/map/**", "/mypage/**").authenticated()
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth -> oauth
-                        .loginPage("/login")
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(oAuth2LoginSuccessHandler)
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                );
+
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/css/**", "/images/**", "/login", "/notifications/**").permitAll()
+                .requestMatchers("/posts/**", "/map/**", "/mypage/**").authenticated()
+                .anyRequest().authenticated())
+
+            .oauth2Login(oauth -> oauth
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService))
+                .successHandler(oAuth2LoginSuccessHandler))
+
+            .logout(logout -> logout
+                .logoutSuccessUrl("/login")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID"));
+
         return http.build();
     }
 }

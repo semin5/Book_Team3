@@ -24,6 +24,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
 
     public String storeImage(MultipartFile file, int postId) throws IOException {
+
         ObjectId fileId = gridFsTemplate.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType());
 
         Image image = Image.builder()
@@ -41,14 +42,17 @@ public class ImageService {
     }
 
     public Image getImageMetadata(String id) {
+
         return imageRepository.findById(id).orElse(null);
     }
 
     public InputStream getImageStream(String id) throws IOException {
+
         GridFSFile file = gridFsTemplate.findOne(
                 query(where("_id").is(new ObjectId(id))));
 
         if (file == null) {
+
             return null;
         }
 

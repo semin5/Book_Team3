@@ -15,6 +15,7 @@ public class NotificationController {
 
     @GetMapping("/notifications/connect")
     public SseEmitter connect(@RequestParam int memberId) {
+
         return sseService.connect(memberId);
     }
 }

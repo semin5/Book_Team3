@@ -115,10 +115,12 @@ public class PostService {
 
     @Transactional
     public PostResponse getPost(int postId) {
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
         post.setView_cnt(post.getView_cnt() + 1);
         Map map = mapService.findByPostId(postId);
+
         return PostResponse.from(post, map);
     }
 
@@ -149,6 +151,7 @@ public class PostService {
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
+
         }, isReactionSort ? Pageable.unpaged() : pageable);
 
         if (isReactionSort) {
@@ -218,6 +221,7 @@ public class PostService {
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
+
         }, isReactionSort ? Pageable.unpaged() : pageable);
 
 
@@ -254,6 +258,7 @@ public class PostService {
             dto.setLikeCount(like);
             dto.setDislikeCount(dislike);
             dto.setTotalReactionCount(like - dislike);
+
             return dto;
         });
     }
