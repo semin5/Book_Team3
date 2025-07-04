@@ -36,11 +36,16 @@ public class PostController {
     private final ImageService imageService;
 
     @GetMapping
-    public String listPosts(@ModelAttribute("condition") PostSearchCondition condition, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, Model model,  @RequestParam(value = "sort", defaultValue = "createdAt") String sortType) {
+    public String listPosts(@ModelAttribute("condition") PostSearchCondition condition,
+                            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                            Model model,
+                            @RequestParam(value = "sort", defaultValue = "createdAt") String sortType) {
 
         Pageable safePageable;
         if ("like".equalsIgnoreCase(sortType) || "dislike".equalsIgnoreCase(sortType)) {
-            safePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+            safePageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize());
         } else {
             safePageable = PageRequest.of(
                     pageable.getPageNumber(),
@@ -52,19 +57,21 @@ public class PostController {
         Page<PostResponse> posts = postService.getPostsByCondition(condition, safePageable, sortType);
 
         posts.getContent().forEach(post ->
-                post.setTotalReactionCount(
-                        reactionService.getTotalReactionCount(post.getPostId(), TargetType.POST)
-                )
-        );
+                post.setTotalReactionCount(reactionService.getTotalReactionCount(post.getPostId(), TargetType.POST)
+        ));
 
         model.addAttribute("posts", posts);
         model.addAttribute("condition", condition);
         model.addAttribute("sort", sortType);
+
         return "list";
     }
 
     @GetMapping("/{id}")
-    public String postDetail(@PathVariable int id, @SessionAttribute(value = "loginMember", required = false) Object loginMember, Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
+    public String postDetail(@PathVariable int id,
+                             @SessionAttribute(value = "loginMember", required = false) Object loginMember,
+                             Model model,
+                             @AuthenticationPrincipal CustomOAuth2User principal) {
 
         PostResponse post = postService.getPost(id);
         Map map = mapService.findByPostId(id);
@@ -88,14 +95,21 @@ public class PostController {
 
     @GetMapping("/write")
     public String writeForm(Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
+
         model.addAttribute("postCreateRequest", new PostCreateRequest());
         model.addAttribute("allTags", tagService.findAllTags());
         model.addAttribute("currentUser", principal.getMember());
+
         return "write";
     }
 
     @PostMapping("/write")
-    public String createPost(@RequestParam java.util.Map<String, String> paramMap, @ModelAttribute @Valid PostCreateRequest request, BindingResult bindingResult, @AuthenticationPrincipal CustomOAuth2User principal, Model model, @RequestParam(value = "image", required = false) MultipartFile[] image) {
+    public String createPost(@RequestParam java.util.Map<String, String> paramMap,
+                             @ModelAttribute @Valid PostCreateRequest request,
+                             BindingResult bindingResult,
+                             @AuthenticationPrincipal CustomOAuth2User principal,
+                             Model model,
+                             @RequestParam(value = "image", required = false) MultipartFile[] image) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("allTags", tagService.findAllTags());
@@ -116,11 +130,13 @@ public class PostController {
                 }
             }
         }
+
         return "redirect:/posts/" + postid;
     }
 
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable int id, Model model) {
+
         PostResponse post = postService.getPost(id);
 
         model.addAttribute("post", post);
@@ -131,11 +147,17 @@ public class PostController {
             model.addAttribute("imageId", images.get(0).getId());
         }
         model.addAttribute("allTags", tagService.findAllTags());
+
         return "post_edit";
     }
 
     @PostMapping("/edit/{id}")
-    public String updatePost(@PathVariable int id, @ModelAttribute PostCreateRequest request, @AuthenticationPrincipal CustomOAuth2User principal, @RequestParam(value = "image", required = false) List<MultipartFile> newImage, @RequestParam(value = "deleteImage", required = false) String deleteImageFlag) throws IOException{
+    public String updatePost(@PathVariable int id,
+                             @ModelAttribute PostCreateRequest request,
+                             @AuthenticationPrincipal CustomOAuth2User principal,
+                             @RequestParam(value = "image", required = false) List<MultipartFile> newImage,
+                             @RequestParam(value = "deleteImage", required = false) String deleteImageFlag) throws IOException{
+
         int memberId = principal.getMember().getMemberId();
         postService.updatePost(id, request, memberId);
 
@@ -158,11 +180,14 @@ public class PostController {
     }
 
     @PostMapping("/delete/{id}")
-    public String deletePost(@PathVariable int id, @AuthenticationPrincipal CustomOAuth2User principal) {
+    public String deletePost(@PathVariable int id,
+                             @AuthenticationPrincipal CustomOAuth2User principal) {
+
         int memberId = principal.getMember().getMemberId();
         postService.deletePost(id, memberId);
         mapService.deleteByPostId(id);
         imageService.deleteImagesByPostId(id);
+
         return "redirect:/posts";
     }
 }

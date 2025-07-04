@@ -25,7 +25,8 @@ import org.hibernate.annotations.CreationTimestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "target_type", "target_id"}))
+@Table(uniqueConstraints =
+    @UniqueConstraint(columnNames = {"member_id", "target_type", "target_id"}))
 public @Data class Reaction {
 
     @Id
@@ -38,14 +39,16 @@ public @Data class Reaction {
     private Member member;
 
     @Enumerated(EnumType.STRING)
-    @Column(name= "target_type", nullable = false, columnDefinition = "ENUM('POST', 'COMMENT')")
+    @Column(name= "target_type", nullable = false,
+            columnDefinition = "ENUM('POST', 'COMMENT')")
     private TargetType targetType;
 
     @Column(name="target_id", nullable = false)
     private int targetId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "reaction_type", nullable = false, columnDefinition = "ENUM('LIKE', 'DISLIKE')")
+    @Column(name = "reaction_type", nullable = false,
+            columnDefinition = "ENUM('LIKE', 'DISLIKE')")
     private ReactionType reactionType;
 
     @CreationTimestamp

@@ -33,7 +33,8 @@ public class ImageController {
     }
 
     @PostMapping("/images/delete/{id}")
-    public String deleteImage(@PathVariable String id, @RequestHeader("referer") String referer) {
+    public String deleteImage(@PathVariable String id,
+                              @RequestHeader("referer") String referer) {
         Image image = imageService.getImageMetadata(id);
         if (image != null) {
             imageService.deleteImagesByPostId(image.getPostId());

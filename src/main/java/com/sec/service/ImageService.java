@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import static org.springframework.data.mongodb.core.query.Query.query;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +34,9 @@ public class ImageService {
                 .uploadDate(LocalDateTime.now())
                 .postId(postId)
                 .build();
+
         imageRepository.save(image);
+
         return fileId.toString();
     }
 
@@ -42,29 +46,30 @@ public class ImageService {
 
     public InputStream getImageStream(String id) throws IOException {
         GridFSFile file = gridFsTemplate.findOne(
-                org.springframework.data.mongodb.core.query.Query.query(
-                        org.springframework.data.mongodb.core.query.Criteria.where("_id").is(new ObjectId(id))
-                )
-        );
+                query(where("_id").is(new ObjectId(id))));
+
         if (file == null) {
             return null;
         }
+
         GridFsResource resource = gridFsTemplate.getResource(file);
+
         return resource.getInputStream();
     }
 
     public List<Image> getImagesByPostId(Integer postId) {
+
         return imageRepository.findByPostId(postId);
     }
 
     public void deleteImagesByPostId(Integer postId) {
+
         List<Image> images = imageRepository.findByPostId(postId);
+
         for (Image image : images) {
             gridFsTemplate.delete(
-                    org.springframework.data.mongodb.core.query.Query.query(
-                            org.springframework.data.mongodb.core.query.Criteria.where("_id").is(new ObjectId(image.getId()))
-                    )
-            );
+                    query(where("_id").is(new ObjectId(image.getId()))));
+
             imageRepository.delete(image);
         }
     }

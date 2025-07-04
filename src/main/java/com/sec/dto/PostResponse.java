@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public @Data class PostResponse {
+
     private int postId;
     private String content;
     private String title;
@@ -40,6 +41,7 @@ public @Data class PostResponse {
     }
 
     public static PostResponse from(Post post, Map map) {
+
         Set<String> tagNames = post.getTags() == null ? Set.of() :
                 post.getTags().stream()
                         .map(Tag::getName)

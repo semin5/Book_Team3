@@ -20,7 +20,9 @@ public class ReactionController {
     private final SseService sseService;
 
     @PostMapping("/{postId}/react")
-    public String react(@PathVariable int postId, @RequestParam String type, @AuthenticationPrincipal CustomOAuth2User principal) {
+    public String react(@PathVariable int postId,
+                        @RequestParam String type,
+                        @AuthenticationPrincipal CustomOAuth2User principal) {
 
         int memberId = principal.getMember().getMemberId();
 

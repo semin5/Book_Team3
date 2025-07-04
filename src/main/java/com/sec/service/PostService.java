@@ -35,6 +35,7 @@ public class PostService {
 
     @Transactional
     public int createPost(PostCreateRequest request, int memberId) {
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
@@ -66,6 +67,7 @@ public class PostService {
 
     @Transactional
     public void updatePost(int postId, PostCreateRequest request, int memberId) {
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
@@ -100,11 +102,14 @@ public class PostService {
 
     @Transactional
     public void deletePost(int postId, int memberId) {
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
         if (!Objects.equals(post.getMember().getMemberId(), memberId)) {
             throw new SecurityException("본인의 게시글만 삭제할 수 있습니다.");
         }
+
         postRepository.delete(post);
     }
 
@@ -146,7 +151,6 @@ public class PostService {
             return cb.and(predicates.toArray(new Predicate[0]));
         }, isReactionSort ? Pageable.unpaged() : pageable);
 
-
         if (isReactionSort) {
             List<PostResponse> sorted = result.getContent().stream()
                     .map(PostResponse::from)
@@ -180,6 +184,7 @@ public class PostService {
             dto.setLikeCount(like);
             dto.setDislikeCount(dislike);
             dto.setTotalReactionCount(like - dislike);
+
             return dto;
         });
     }
@@ -259,6 +264,7 @@ public class PostService {
         List<Integer> likedPostIds = reactionService.getPostIdsReactedByMember(memberId, ReactionType.LIKE);
 
         if (likedPostIds.isEmpty()) {
+
             return Page.empty(pageable);
         }
 
@@ -288,6 +294,7 @@ public class PostService {
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
+
         }, isReactionSort ? Pageable.unpaged() : pageable);
 
 
@@ -304,6 +311,7 @@ public class PostService {
 
             if ("like".equals(cleanSortType)) {
                 sorted.sort(Comparator.comparingInt(PostResponse::getTotalReactionCount).reversed());
+
             } else {
                 sorted.sort(Comparator.comparingInt(PostResponse::getTotalReactionCount));
             }
@@ -324,11 +332,13 @@ public class PostService {
             dto.setLikeCount(like);
             dto.setDislikeCount(dislike);
             dto.setTotalReactionCount(like - dislike);
+
             return dto;
         });
     }
 
     public int findPostWriterId(int postId) {
+
         return postRepository.findWriterIdByPostId(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 작성자 조회 실패"));
     }

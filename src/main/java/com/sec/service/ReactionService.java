@@ -21,17 +21,22 @@ public class ReactionService {
 
     @Transactional
     public int react(int targetId, int memberId, TargetType targetType, String reactionType) {
+
         ReactionType type = ReactionType.valueOf(reactionType.toUpperCase());
         Reaction existing = reactionRepository.findByMember_MemberIdAndTargetTypeAndTargetId(memberId, targetType, targetId).orElse(null);
 
         if (existing != null) {
+
             if (existing.getReactionType() == type) {
                 reactionRepository.delete(existing);
+
                 return -1;
+
             } else {
                 existing.setReactionType(type);
                 existing.setCreatedAt(LocalDateTime.now());
                 reactionRepository.save(existing);
+
                 return 2;
             }
         }
@@ -44,21 +49,27 @@ public class ReactionService {
         newReaction.setCreatedAt(LocalDateTime.now());
 
         reactionRepository.save(newReaction);
+
         return 1;
     }
 
-    public int getReactionCount(int targetId, TargetType type, ReactionType reactionType) {
+    public int getReactionCount(int targetId, TargetType type,
+                                ReactionType reactionType) {
+
         return reactionRepository.countByTargetIdAndTargetTypeAndReactionType(targetId, type, reactionType);
     }
 
     public int getTotalReactionCount(int targetId, TargetType type) {
+
         int likes = getReactionCount(targetId, type, ReactionType.LIKE);
         int dislikes = getReactionCount(targetId, type, ReactionType.DISLIKE);
+
         return likes - dislikes;
     }
 
     @Transactional(readOnly = true)
     public List<Integer> getPostIdsReactedByMember(int memberId, ReactionType reactionType) {
+
         return reactionRepository.findPostIdsReactedByMember(memberId, reactionType);
     }
 }

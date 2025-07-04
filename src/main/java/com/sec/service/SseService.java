@@ -16,6 +16,7 @@ public class SseService {
     private final Map<Integer, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter connect(int memberId) {
+
         SseEmitter emitter = new SseEmitter(0L);
         emitters.put(memberId, emitter);
 
@@ -27,6 +28,7 @@ public class SseService {
         } catch (IOException e) {
             emitter.completeWithError(e);
         }
+
         return emitter;
     }
 

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public @Data class CommentDto {
+
     private Integer postId;
     private Integer memberId;
     private String content;

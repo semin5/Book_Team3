@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "map")
 public @Data class Map {
+
     @Id
     private String id;
     private int postId;

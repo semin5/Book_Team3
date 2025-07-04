@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public @Data class PostSearchCondition {
+
     private String keyword;
     private String tag;
     private Boolean isSolved;

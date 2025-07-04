@@ -30,10 +30,12 @@ public class CommentService {
 
         Post post = postRepository.findById(dto.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
         Member member = memberRepository.findById(dto.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         Book book = null;
+
         if (dto.getBookTitle() != null && dto.getBookAuthor() != null) {
             book = bookRepository.findByTitleAndAuthor(dto.getBookTitle(), dto.getBookAuthor())
                     .orElseGet(() -> {
@@ -66,7 +68,9 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComment(Integer commentId, String content, String bookTitle, String bookAuthor, Integer bookId) {
+    public void updateComment(Integer commentId, String content,
+                              String bookTitle, String bookAuthor, Integer bookId) {
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
 
@@ -79,12 +83,14 @@ public class CommentService {
             book.setAuthor(bookAuthor.trim());
             bookRepository.save(book);
             comment.setBook(book);
+
         } else {
             Book existingBook = bookRepository.findByTitleAndAuthor(bookTitle.trim(), bookAuthor.trim())
                     .orElse(null);
 
             if (existingBook != null) {
                 comment.setBook(existingBook);
+
             } else {
                 Book newBook = Book.builder()
                         .title(bookTitle.trim())
@@ -100,6 +106,7 @@ public class CommentService {
 
     @Transactional
     public void adoptComment(int commentId, int postId) {
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
 
@@ -112,6 +119,7 @@ public class CommentService {
 
             comment.setIs_selected(true);
             commentRepository.save(comment);
+
         } else {
             throw new RuntimeException("이미 채택된 게시글입니다.");
 

@@ -76,7 +76,8 @@
             <td th:text="${post.nickname}"></td>
             <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
             <td>
-                <span th:text="${post.isSolved} ? '완료' : '답변 대기'" th:class="${post.isSolved} ? 'text-success' : 'text-secondary'"></span>
+                <span th:text="${post.isSolved} ? '완료' : '답변 대기'"
+                      th:class="${post.isSolved} ? 'text-success' : 'text-secondary'"></span>
             </td>
             <td th:text="${post.viewCnt}">0</td>
             <td th:text="${post.totalReactionCount}">0</td>
@@ -87,19 +88,23 @@
     <nav th:if="${posts.totalPages > 1}">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${posts.first} ? 'disabled'">
-                <a class="page-link" th:href="@{/posts(page=0, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">처음</a>
+                <a class="page-link" th:href="@{/posts(page=0, keyword=${condition.keyword},
+                tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">처음</a>
             </li>
             <li class="page-item" th:classappend="${posts.hasPrevious()} ? '' : 'disabled'">
-                <a class="page-link" th:href="@{/posts(page=${posts.number - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">이전</a>
+                <a class="page-link" th:href="@{/posts(page=${posts.number - 1}, keyword=${condition.keyword},
+                tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">이전</a>
             </li>
             <li class="page-item disabled">
                 <a class="page-link" th:text="${posts.number + 1} + ' / ' + ${posts.totalPages}"></a>
             </li>
             <li class="page-item" th:classappend="${posts.hasNext()} ? '' : 'disabled'">
-                <a class="page-link" th:href="@{/posts(page=${posts.number + 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">다음</a>
+                <a class="page-link" th:href="@{/posts(page=${posts.number + 1}, keyword=${condition.keyword},
+                tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">다음</a>
             </li>
             <li class="page-item" th:classappend="${posts.last} ? 'disabled'">
-                <a class="page-link" th:href="@{/posts(page=${posts.totalPages - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">끝</a>
+                <a class="page-link" th:href="@{/posts(page=${posts.totalPages - 1}, keyword=${condition.keyword},
+                tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">끝</a>
             </li>
         </ul>
     </nav>

@@ -96,19 +96,23 @@
     <nav th:if="${likedPosts.totalPages > 1}">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${likedPosts.first} ? 'disabled'">
-                <a class="page-link" th:href="@{/mypage/likes(page=0, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">처음</a>
+                <a class="page-link" th:href="@{/mypage/likes(page=0, keyword=${condition.keyword},
+                tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">처음</a>
             </li>
             <li class="page-item" th:classappend="${!likedPosts.hasPrevious()} ? 'disabled'">
-                <a class="page-link" th:href="@{/mypage/likes(page=${likedPosts.number - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">이전</a>
+                <a class="page-link" th:href="@{/mypage/likes(page=${likedPosts.number - 1}, keyword=${condition.keyword},
+                tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">이전</a>
             </li>
             <li class="page-item disabled">
                 <a class="page-link" th:text="${likedPosts.number + 1} + ' / ' + ${likedPosts.totalPages}">페이지 정보</a>
             </li>
             <li class="page-item" th:classappend="${!likedPosts.hasNext()} ? 'disabled'">
-                <a class="page-link" th:href="@{/mypage/likes(page=${likedPosts.number + 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">다음</a>
+                <a class="page-link" th:href="@{/mypage/likes(page=${likedPosts.number + 1}, keyword=${condition.keyword},
+                tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">다음</a>
             </li>
             <li class="page-item" th:classappend="${likedPosts.last} ? 'disabled'">
-                <a class="page-link" th:href="@{/mypage/likes(page=${likedPosts.totalPages - 1}, keyword=${condition.keyword}, tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">끝</a>
+                <a class="page-link" th:href="@{/mypage/likes(page=${likedPosts.totalPages - 1}, keyword=${condition.keyword},
+                tag=${condition.tag}, isSolved=${condition.isSolved}, sort=${sort})}">끝</a>
             </li>
         </ul>
     </nav>

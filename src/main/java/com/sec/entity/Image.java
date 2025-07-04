@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Document(collection = "image")
 public @Data class Image {
+
     @Id
     private String id;
     private String filename;

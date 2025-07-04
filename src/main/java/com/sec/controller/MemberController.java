@@ -27,10 +27,12 @@ public class MemberController {
     private final MemberRepository memberRepository;
 
     @GetMapping
-    public String myPages(Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
-        Member member = principal.getMember();
-        int memberId = member.getMemberId();
+    public String myPages(Model model,
+                          @AuthenticationPrincipal CustomOAuth2User principal) {
 
+        Member member = principal.getMember();
+
+        int memberId = member.getMemberId();
         long postCount = memberRepository.countPostsByMemberId(memberId);
         long commentCount = memberRepository.countCommentsByMemberId(memberId);
         long likeCount = memberRepository.countLikesByMemberId(memberId);
@@ -41,17 +43,25 @@ public class MemberController {
         model.addAttribute("commentCount", commentCount);
         model.addAttribute("likeCount", likeCount);
         model.addAttribute("dislikeCount", dislikeCount);
+
         return "mypage";
     }
 
     @GetMapping("/posts")
-    public String myWrittenPosts(Model model, @AuthenticationPrincipal CustomOAuth2User principal, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword, @RequestParam(required = false) Boolean isSolved, @RequestParam(required = false, defaultValue = "createdAt") String sort, @RequestParam(required = false) String tag) {
+    public String myWrittenPosts(Model model,
+                                 @AuthenticationPrincipal CustomOAuth2User principal,
+                                 @RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(required = false) String keyword,
+                                 @RequestParam(required = false) Boolean isSolved,
+                                 @RequestParam(required = false, defaultValue = "createdAt") String sort,
+                                 @RequestParam(required = false) String tag) {
+
         int memberId = principal.getMember().getMemberId();
+
         PostSearchCondition condition = new PostSearchCondition();
         condition.setKeyword(keyword);
         condition.setIsSolved(isSolved);
         condition.setTag(tag);
-
 
         Pageable myPostPageable = PageRequest.of(page, 10, Sort.by("createdAt").descending());
         Page<PostResponse> myPosts = postService.getPostsWrittenByMember(memberId, condition, myPostPageable, sort);
@@ -59,12 +69,21 @@ public class MemberController {
         model.addAttribute("myPosts", myPosts);
         model.addAttribute("condition", condition);
         model.addAttribute("sort", sort);
+
         return "mypage_posts";
     }
 
     @GetMapping("/likes")
-    public String myLikedPosts(Model model, @AuthenticationPrincipal CustomOAuth2User principal, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword, @RequestParam(required = false) Boolean isSolved, @RequestParam(required = false, defaultValue = "createdAt") String sort, @RequestParam(required = false) String tag) {
+    public String myLikedPosts(Model model,
+                               @AuthenticationPrincipal CustomOAuth2User principal,
+                               @RequestParam(defaultValue = "0") int page,
+                               @RequestParam(required = false) String keyword,
+                               @RequestParam(required = false) Boolean isSolved,
+                               @RequestParam(required = false, defaultValue = "createdAt") String sort,
+                               @RequestParam(required = false) String tag) {
+
         int memberId = principal.getMember().getMemberId();
+
         PostSearchCondition condition = new PostSearchCondition();
         condition.setKeyword(keyword);
         condition.setIsSolved(isSolved);
@@ -76,6 +95,7 @@ public class MemberController {
         model.addAttribute("likedPosts", likedPosts);
         model.addAttribute("condition", condition);
         model.addAttribute("sort", sort);
+
         return "mypage_likes";
     }
 }
