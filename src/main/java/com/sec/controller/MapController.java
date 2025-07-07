@@ -1,5 +1,6 @@
 package com.sec.controller;
 
+import com.sec.config.MapConfig;
 import com.sec.dto.PostResponse;
 import com.sec.dto.PostSearchCondition;
 import com.sec.entity.Map;

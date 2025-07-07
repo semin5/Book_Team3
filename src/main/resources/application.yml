@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://
+    url: jdbc:mysql://localhost:3306/book
     username:
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,8 +20,8 @@ spring:
       client:
         registration:
           google:
-            client-id:
-            client-secret:
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
             scope:
               - profile
               - email
@@ -33,7 +33,7 @@ spring:
             user-name-attribute: sub
   data:
     mongodb:
-      uri: mongodb://
+      uri: mongodb://localhost:27017/team3
   servlet:
     multipart:
       enabled: true
@@ -55,3 +55,6 @@ server:
     max-file-upload-count: 50
     additional-tld-skip-patterns: "*.jar"
     max-http-form-post-size: -1
+map:
+  kakao:
+    key: ${KAKAO_MAP_KEY:}
